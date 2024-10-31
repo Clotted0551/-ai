@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import Dashboard from './Dashboard'; // Dashboard 컴포넌트 가져오기
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -11,18 +12,17 @@ function App() {
   const [userBirthday, setUserBirthday] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); //성공메시지 추가
+  const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccessMessage(''); // 성공 메시지 초기화
+    setSuccessMessage('');
     setIsLoading(true);
 
-    const url = showSignUp
-      ? '/api/user/signup'
-      : '/api/user/login';
+    const url = showSignUp ? '/api/user/signup' : '/api/user/login';
+
     const userData = {
       userId: userId,
       userNickname: userNickname,
@@ -52,12 +52,15 @@ function App() {
       }
 
       if (showSignUp) {
-        setSuccessMessage('회원가입 성공! 로그인 화면으로 돌아갑니다.'); // 성공 메시지 설정
+        setSuccessMessage('회원가입 성공! 로그인 화면으로 돌아갑니다.');
         setTimeout(() => {
-          setShowSignUp(false); // 로그인 화면으로 전환
-        }, 2000); // 화면으로
+          setShowSignUp(false);
+        }, 2000);
       } else {
         console.log('로그인 성공', data);
+        
+        // JWT 토큰 저장 (로그인 시)
+        localStorage.setItem('token', data.token); // 서버에서 받은 토큰 저장
         setIsLoggedIn(true);
       }
     } catch (error) {
@@ -76,16 +79,11 @@ function App() {
     setUserPassword('');
     setUserBirthday('');
     setUserEmail('');
+    localStorage.removeItem('token'); // 로그아웃 시 토큰 삭제
   };
 
   if (isLoggedIn) {
-    return (
-      <div className="container">
-        <h1>환영합니다!</h1>
-        <p>성공적으로 로그인되었습니다.</p>
-        <button className="btn" onClick={handleLogout}>로그아웃</button>
-      </div>
-    );
+    return <Dashboard />; // 로그인 상태면 대시보드 표시
   }
 
   return (
@@ -163,7 +161,7 @@ function App() {
         </button>
       </form>
       {error && <p className="error">{error}</p>}
-      {successMessage && <p className="success">{successMessage}</p>} {/* 성공 메시지 추가 */}
+      {successMessage && <p className="success">{successMessage}</p>}
       <p className="switch-text">
         {showSignUp ? '이미 계정이 있으신가요? ' : '계정이 없으신가요? '}
         <button className="link-btn" onClick={() => setShowSignUp(!showSignUp)}>

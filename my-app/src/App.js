@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Dashboard from './Dashboard'; // Dashboard 컴포넌트 가져오기
 
@@ -14,6 +14,13 @@ function App() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,34 +41,38 @@ function App() {
 
     const body = showSignUp
       ? JSON.stringify(userData)
-      : JSON.stringify({ userId: userId, password: userPassword });
+      : JSON.stringify({ userId: userId, userPassword: userPassword });
+
 
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: body,
       });
 
-      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || '서버 오류가 발생했습니다.');
+        const errorData = await response.json().catch(() => ({})); // JSON 파싱 실패 시 빈 객체 반환
+        throw new Error(errorData.message || '서버 오류가 발생했습니다.');
       }
 
+      const data = await response.json();
       if (showSignUp) {
         setSuccessMessage('회원가입 성공! 로그인 화면으로 돌아갑니다.');
         setTimeout(() => {
-          setShowSignUp(false);
+            setShowSignUp(false);
         }, 2000);
       } else {
         console.log('로그인 성공', data);
-        
-        // JWT 토큰 저장 (로그인 시)
-        localStorage.setItem('token', data.token); // 서버에서 받은 토큰 저장
-        setIsLoggedIn(true);
+        if (data.token) {
+            localStorage.setItem('token', data.token); // 서버에서 받은 토큰 저장
+            setIsLoggedIn(true);
+        } else {
+            throw new Error('토큰이 응답에 포함되지 않았습니다.');
+        }
       }
     } catch (error) {
       console.error('에러:', error);

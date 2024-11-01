@@ -35,7 +35,7 @@ function App() {
     const body = showSignUp
       ? JSON.stringify(userData)
       : JSON.stringify({ userId: userId, password: userPassword });
-
+  
     try {
       const response = await fetch(url, {
         method: 'POST',

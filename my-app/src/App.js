@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
-import Dashboard from './Dashboard'; // Dashboard 컴포넌트 가져오기
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Main from './Main';
+import './App.css'; // 이 파일에 스타일을 추가할 것입니다.
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const [userId, setUserId] = useState('');
   const [userNickname, setUserNickname] = useState('');
-  const [userName, setUserName] = useState(''); 
+  const [userName, setUserName] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [userBirthday, setUserBirthday] = useState('');
   const [userEmail, setUserEmail] = useState('');
@@ -31,31 +32,29 @@ function App() {
     const url = showSignUp ? '/api/user/signup' : '/api/user/login';
 
     const userData = {
-      userId: userId,
-      userNickname: userNickname,
-      userName: userName,
-      userPassword: userPassword,
-      userBirthday: userBirthday,
-      userEmail: userEmail,
+      userId,
+      userNickname,
+      userName,
+      userPassword,
+      userBirthday,
+      userEmail,
     };
 
     const body = showSignUp
       ? JSON.stringify(userData)
-      : JSON.stringify({ userId: userId, userPassword: userPassword });
-
+      : JSON.stringify({ userId, userPassword });
 
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
         },
         body: body,
       });
 
-
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({})); // JSON 파싱 실패 시 빈 객체 반환
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || '서버 오류가 발생했습니다.');
       }
 
@@ -63,15 +62,15 @@ function App() {
       if (showSignUp) {
         setSuccessMessage('회원가입 성공! 로그인 화면으로 돌아갑니다.');
         setTimeout(() => {
-            setShowSignUp(false);
+          setShowSignUp(false);
         }, 2000);
       } else {
         console.log('로그인 성공', data);
         if (data.token) {
-            localStorage.setItem('token', data.token); // 서버에서 받은 토큰 저장
-            setIsLoggedIn(true);
+          localStorage.setItem('token', data.token);
+          setIsLoggedIn(true);
         } else {
-            throw new Error('토큰이 응답에 포함되지 않았습니다.');
+          throw new Error('토큰이 응답에 포함되지 않았습니다.');
         }
       }
     } catch (error) {
@@ -82,26 +81,12 @@ function App() {
     }
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUserId('');
-    setUserNickname('');
-    setUserName('');
-    setUserPassword('');
-    setUserBirthday('');
-    setUserEmail('');
-    localStorage.removeItem('token'); // 로그아웃 시 토큰 삭제
-  };
-
-  if (isLoggedIn) {
-    return <Dashboard />; // 로그인 상태면 대시보드 표시
-  }
-
-  return (
-    <div className="container">
-      <h1>{showSignUp ? '회원가입' : '로그인'}</h1>
+  const AuthForm = () => (
+    <div className="auth-form">
+      <h2>{showSignUp ? '회원가입' : '로그인'}</h2>
+      <p>{showSignUp ? '새 계정을 만들어주세요.' : '계정에 로그인하세요.'}</p>
       <form onSubmit={handleSubmit}>
-        <div className="input-group">
+        <div className="form-group">
           <label htmlFor="userId">아이디</label>
           <input
             id="userId"
@@ -113,7 +98,7 @@ function App() {
         </div>
         {showSignUp && (
           <>
-            <div className="input-group">
+            <div className="form-group">
               <label htmlFor="userNickname">닉네임</label>
               <input
                 id="userNickname"
@@ -123,7 +108,7 @@ function App() {
                 required
               />
             </div>
-            <div className="input-group">
+            <div className="form-group">
               <label htmlFor="userName">이름</label>
               <input
                 id="userName"
@@ -133,7 +118,7 @@ function App() {
                 required
               />
             </div>
-            <div className="input-group">
+            <div className="form-group">
               <label htmlFor="userEmail">이메일</label>
               <input
                 id="userEmail"
@@ -143,7 +128,7 @@ function App() {
                 required
               />
             </div>
-            <div className="input-group">
+            <div className="form-group">
               <label htmlFor="userBirthday">생년월일 (YYYYMMDD)</label>
               <input
                 id="userBirthday"
@@ -151,13 +136,13 @@ function App() {
                 value={userBirthday}
                 onChange={(e) => setUserBirthday(e.target.value)}
                 pattern="\d{8}"
-                maxLength="8"
+                maxLength={8}
                 required
               />
             </div>
           </>
         )}
-        <div className="input-group">
+        <div className="form-group">
           <label htmlFor="userPassword">비밀번호</label>
           <input
             id="userPassword"
@@ -167,19 +152,36 @@ function App() {
             required
           />
         </div>
-        <button className="btn" type="submit" disabled={isLoading}>
+        <button type="submit" disabled={isLoading}>
           {isLoading ? '처리 중...' : (showSignUp ? '가입하기' : '로그인')}
         </button>
       </form>
-      {error && <p className="error">{error}</p>}
-      {successMessage && <p className="success">{successMessage}</p>}
-      <p className="switch-text">
+      <p>
         {showSignUp ? '이미 계정이 있으신가요? ' : '계정이 없으신가요? '}
-        <button className="link-btn" onClick={() => setShowSignUp(!showSignUp)}>
+        <button className="link-button" onClick={() => setShowSignUp(!showSignUp)}>
           {showSignUp ? '로그인' : '회원가입'}
         </button>
       </p>
     </div>
+  );
+
+  return (
+    <Router>
+      <div className="app">
+        <Routes>
+          <Route path="/" element={
+            isLoggedIn ? <Navigate to="/main" /> : (
+              <>
+                <AuthForm />
+                {error && <div className="error-message">{error}</div>}
+                {successMessage && <div className="success-message">{successMessage}</div>}
+              </>
+            )
+          } />
+          <Route path="/main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

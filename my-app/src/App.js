@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Main from './Main';
-import './App.css'; // 이 파일에 스타일을 추가할 것입니다.
+import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
-  const [userId, setUserId] = useState('');
-  const [userNickname, setUserNickname] = useState('');
-  const [userName, setUserName] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-  const [userBirthday, setUserBirthday] = useState('');
-  const [userEmail, setUserEmail] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const userIdRef = useRef();
+  const userNicknameRef = useRef();
+  const userNameRef = useRef();
+  const userPasswordRef = useRef();
+  const userBirthdayRef = useRef();
+  const userEmailRef = useRef();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -32,17 +33,17 @@ function App() {
     const url = showSignUp ? '/api/user/signup' : '/api/user/login';
 
     const userData = {
-      userId,
-      userNickname,
-      userName,
-      userPassword,
-      userBirthday,
-      userEmail,
+      userId: userIdRef.current.value,
+      userNickname: userNicknameRef.current?.value,
+      userName: userNameRef.current?.value,
+      userPassword: userPasswordRef.current.value,
+      userBirthday: userBirthdayRef.current?.value,
+      userEmail: userEmailRef.current?.value,
     };
 
     const body = showSignUp
       ? JSON.stringify(userData)
-      : JSON.stringify({ userId, userPassword });
+      : JSON.stringify({ userId: userData.userId, userPassword: userData.userPassword });
 
     try {
       const response = await fetch(url, {
@@ -91,8 +92,7 @@ function App() {
           <input
             id="userId"
             type="text"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
+            ref={userIdRef}
             required
           />
         </div>
@@ -103,8 +103,7 @@ function App() {
               <input
                 id="userNickname"
                 type="text"
-                value={userNickname}
-                onChange={(e) => setUserNickname(e.target.value)}
+                ref={userNicknameRef}
                 required
               />
             </div>
@@ -113,8 +112,7 @@ function App() {
               <input
                 id="userName"
                 type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
+                ref={userNameRef}
                 required
               />
             </div>
@@ -123,8 +121,7 @@ function App() {
               <input
                 id="userEmail"
                 type="email"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
+                ref={userEmailRef}
                 required
               />
             </div>
@@ -133,8 +130,7 @@ function App() {
               <input
                 id="userBirthday"
                 type="text"
-                value={userBirthday}
-                onChange={(e) => setUserBirthday(e.target.value)}
+                ref={userBirthdayRef}
                 pattern="\d{8}"
                 maxLength={8}
                 required
@@ -147,8 +143,7 @@ function App() {
           <input
             id="userPassword"
             type="password"
-            value={userPassword}
-            onChange={(e) => setUserPassword(e.target.value)}
+            ref={userPasswordRef}
             required
           />
         </div>

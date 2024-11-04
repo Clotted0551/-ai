@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Main from './Main';
+import MyPage from './MyPage';
 import './App.css';
 
 function App() {
@@ -174,6 +175,7 @@ function App() {
             )
           } />
           <Route path="/main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
+          <Route path="/mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
         </Routes>
       </div>
     </Router>

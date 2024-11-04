@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Main from './Main';
 import MyPage from './MyPage';
@@ -11,12 +11,13 @@ function App() {
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const userIdRef = useRef();
-  const userNicknameRef = useRef();
-  const userNameRef = useRef();
-  const userPasswordRef = useRef();
-  const userBirthdayRef = useRef();
-  const userEmailRef = useRef();
+  // 상태 변수 선언
+  const [userId, setUserId] = useState('');
+  const [userNickname, setUserNickname] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [userBirthday, setUserBirthday] = useState('');
+  const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -34,17 +35,17 @@ function App() {
     const url = showSignUp ? '/api/user/signup' : '/api/user/login';
 
     const userData = {
-      userId: userIdRef.current.value,
-      userNickname: userNicknameRef.current?.value,
-      userName: userNameRef.current?.value,
-      userPassword: userPasswordRef.current.value,
-      userBirthday: userBirthdayRef.current?.value,
-      userEmail: userEmailRef.current?.value,
+      userId,
+      userNickname: showSignUp ? userNickname : undefined, // 회원가입일 때만 포함
+      userName: showSignUp ? userName : undefined,         // 회원가입일 때만 포함
+      userPassword,
+      userBirthday: showSignUp ? userBirthday : undefined, // 회원가입일 때만 포함
+      userEmail: showSignUp ? userEmail : undefined,       // 회원가입일 때만 포함
     };
 
     const body = showSignUp
       ? JSON.stringify(userData)
-      : JSON.stringify({ userId: userData.userId, userPassword: userData.userPassword });
+      : JSON.stringify({ userId, userPassword });
 
     try {
       const response = await fetch(url, {
@@ -93,7 +94,8 @@ function App() {
           <input
             id="userId"
             type="text"
-            ref={userIdRef}
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
             required
           />
         </div>
@@ -104,7 +106,8 @@ function App() {
               <input
                 id="userNickname"
                 type="text"
-                ref={userNicknameRef}
+                value={userNickname}
+                onChange={(e) => setUserNickname(e.target.value)}
                 required
               />
             </div>
@@ -113,7 +116,8 @@ function App() {
               <input
                 id="userName"
                 type="text"
-                ref={userNameRef}
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
                 required
               />
             </div>
@@ -122,7 +126,8 @@ function App() {
               <input
                 id="userEmail"
                 type="email"
-                ref={userEmailRef}
+                value={userEmail}
+                onChange={(e) => setUserEmail(e.target.value)}
                 required
               />
             </div>
@@ -131,7 +136,8 @@ function App() {
               <input
                 id="userBirthday"
                 type="text"
-                ref={userBirthdayRef}
+                value={userBirthday}
+                onChange={(e) => setUserBirthday(e.target.value)}
                 pattern="\d{8}"
                 maxLength={8}
                 required
@@ -144,7 +150,8 @@ function App() {
           <input
             id="userPassword"
             type="password"
-            ref={userPasswordRef}
+            value={userPassword}
+            onChange={(e) => setUserPassword(e.target.value)}
             required
           />
         </div>

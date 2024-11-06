@@ -42,7 +42,7 @@ function Main() {
     <div className="main">
       <header>
         <div className="header-content">
-          <h1>Learning Platform</h1>
+          <h1>파인 에듀</h1>
           <div className="user-menu">
             <button className="avatar-button">
               {user.nickname.charAt(0)}
@@ -59,11 +59,11 @@ function Main() {
       </header>
       <main>
         <div className="main-content">
-          <h2>Welcome, {user.nickname}!</h2>
-          <p>Ready to start your learning journey?</p>
+          <h2>환영합니다, {user.userName}!</h2>
+          <p>학습할 준비가 되셨나요?</p>
           <div className="button-group">
-            <button className="main-button">Placement Test</button>
-            <button className="main-button">Start Learning</button>
+            <button className="main-button">배치고사</button>
+            <button className="main-button">학습시작!</button>
           </div>
         </div>
       </main>

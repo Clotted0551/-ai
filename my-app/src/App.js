@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Main from './Main';
-import MyPage from './MyPage';
+import MyPage from './Mypage';
 import './App.css';
 
 function App() {
@@ -36,11 +36,11 @@ function App() {
 
     const userData = {
       userId,
-      userNickname: showSignUp ? userNickname : undefined, // 회원가입일 때만 포함
-      userName: showSignUp ? userName : undefined,         // 회원가입일 때만 포함
+      userNickname: showSignUp ? userNickname : undefined,
+      userName: showSignUp ? userName : undefined,
       userPassword,
-      userBirthday: showSignUp ? userBirthday : undefined, // 회원가입일 때만 포함
-      userEmail: showSignUp ? userEmail : undefined,       // 회원가입일 때만 포함
+      userBirthday: showSignUp ? userBirthday : undefined,
+      userEmail: showSignUp ? userEmail : undefined,
     };
 
     const body = showSignUp
@@ -50,9 +50,7 @@ function App() {
     try {
       const response = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: body,
       });
 
@@ -68,7 +66,6 @@ function App() {
           setShowSignUp(false);
         }, 2000);
       } else {
-        console.log('로그인 성공', data);
         if (data.token) {
           localStorage.setItem('token', data.token);
           setIsLoggedIn(true);
@@ -77,14 +74,13 @@ function App() {
         }
       }
     } catch (error) {
-      console.error('에러:', error);
       setError(error.message || '처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const AuthForm = () => (
+  const AuthForm = ({ handleSubmit }) => (
     <div className="auth-form">
       <h2>{showSignUp ? '회원가입' : '로그인'}</h2>
       <p>{showSignUp ? '새 계정을 만들어주세요.' : '계정에 로그인하세요.'}</p>
@@ -175,7 +171,7 @@ function App() {
           <Route path="/" element={
             isLoggedIn ? <Navigate to="/main" /> : (
               <>
-                <AuthForm />
+                <AuthForm handleSubmit={handleSubmit} />
                 {error && <div className="error-message">{error}</div>}
                 {successMessage && <div className="success-message">{successMessage}</div>}
               </>

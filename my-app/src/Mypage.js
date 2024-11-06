@@ -1,29 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 
-interface UserData {
-  id: string
-  nickname: string
-  name: string
-  email: string
-  dateOfBirth: string
-  level: number | null
-  problemHistory: {
-    id: string
-    title: string
-    date: string
-    result: 'correct' | 'incorrect'
-  }[]
-}
-
 export default function MyProfile() {
-  const [userData, setUserData] = useState<UserData | null>(null)
+  const [userData, setUserData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -39,7 +24,7 @@ export default function MyProfile() {
         const data = await response.json()
         setUserData(data)
       } catch (error) {
-        setError('Error fetching user data. Please try again later.')
+        setError('사용자 데이터를 가져오는 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.')
         console.error('Error fetching user data:', error)
       } finally {
         setIsLoading(false)
@@ -49,7 +34,7 @@ export default function MyProfile() {
     fetchUserData()
   }, [])
 
-  const renderLevelInfo = () => {
+  const renderLevelInfo = useMemo(() => {
     if (!userData || userData.userLevel === null) {
       return (
         <div className="text-center mb-4">
@@ -68,7 +53,7 @@ export default function MyProfile() {
         <Progress value={userData.userLevel} max={5} className="w-full h-4" />
       </>
     )
-  }
+  }, [userData])
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-screen">로딩 중...</div>
@@ -112,7 +97,7 @@ export default function MyProfile() {
             <CardTitle>Level</CardTitle>
           </CardHeader>
           <CardContent>
-            {renderLevelInfo()}
+            {renderLevelInfo}
           </CardContent>
         </Card>
       </div>
@@ -123,6 +108,7 @@ export default function MyProfile() {
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full">
+              <caption className="sr-only">사용자가 풀었던 문제 목록</caption>
               <thead>
                 <tr className="border-b">
                   <th className="text-left p-2">문제</th>

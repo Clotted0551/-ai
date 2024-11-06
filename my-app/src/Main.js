@@ -34,6 +34,10 @@ function Main() {
     navigate('/');
   };
 
+  const handleProfileClick = () => {
+    navigate('/myPage');  // My Profile 버튼 클릭 시 myPage.js로 이동
+  };
+
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -51,7 +55,7 @@ function Main() {
               <p>{user.nickname}</p>
               <p>{user.email}</p>
               <hr />
-              <button>My Profile</button>
+              <button onClick={handleProfileClick}>My Profile</button> {/* 버튼 클릭 시 myPage로 이동 */}
               <button onClick={handleLogout}>Log out</button>
             </div>
           </div>

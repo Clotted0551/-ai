@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Main from './Main';
 import MyPage from './Mypage';
+
 import './App.css';
 
 function App() {
@@ -169,7 +170,7 @@ function App() {
       <div className="app">
         <Routes>
           <Route path="/" element={
-            isLoggedIn ? <Navigate to="/main" /> : (
+            isLoggedIn ? <Navigate to="/Main" /> : (
               <>
                 <AuthForm handleSubmit={handleSubmit} />
                 {error && <div className="error-message">{error}</div>}
@@ -177,8 +178,8 @@ function App() {
               </>
             )
           } />
-          <Route path="/main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
-          <Route path="/Mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
+          <Route path="/Main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
+          <Route path="/Mypage" element={isLoggedIn ? <Mypage /> : <Navigate to="/" />} />
         </Routes>
       </div>
     </Router>

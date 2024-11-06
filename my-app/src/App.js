@@ -178,7 +178,7 @@ function App() {
             )
           } />
           <Route path="/main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
-          <Route path="/mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
+          <Route path="/Mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
         </Routes>
       </div>
     </Router>

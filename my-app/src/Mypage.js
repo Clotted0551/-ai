@@ -1,5 +1,7 @@
+'use client'
+
 import { useState, useEffect, useMemo } from 'react'
-import './myPage_styles.css'; // styles.css를 import
+import { Card, CardContent, CardHeader, Avatar, Typography, LinearProgress } from '@mui/material'
 
 export default function MyProfile() {
   const [userData, setUserData] = useState(null)
@@ -33,96 +35,106 @@ export default function MyProfile() {
   const renderLevelInfo = useMemo(() => {
     if (!userData || userData.userLevel === null) {
       return (
-        <div className="level-info">
-          <span className="level-text">배치전</span>
-        </div>
+        <Typography align="center" variant="h6" gutterBottom>
+          배치전
+        </Typography>
       )
     }
 
     const levelDisplay = userData.userLevel === 5 ? "5(max)" : userData.userLevel
     return (
-      <div className="level-info">
-        <span className="level-text">{levelDisplay}</span>
-        <span className="level-max">/ 5</span>
-        <div className="progress">
-          <div className="progress-bar" style={{ width: `${(userData.userLevel / 5) * 100}%` }}></div>
-        </div>
-      </div>
+      <>
+        <Typography align="center" variant="h3" gutterBottom>
+          {levelDisplay} <span style={{ fontSize: '1rem' }}>/ 5</span>
+        </Typography>
+        <LinearProgress variant="determinate" value={(userData.userLevel / 5) * 100} style={{ height: '10px', borderRadius: '4px' }} />
+      </>
     )
   }, [userData])
 
   if (isLoading) {
-    return <div className="loading">로딩 중...</div>
+    return <div className="flex items-center justify-center h-screen">로딩 중...</div>
   }
 
   if (error) {
-    return <div className="error">{error}</div>
+    return <div className="flex items-center justify-center h-screen text-red-500">{error}</div>
   }
 
   if (!userData) {
-    return <div className="loading">사용자 데이터를 불러올 수 없습니다.</div>
+    return <div className="flex items-center justify-center h-screen">사용자 데이터를 불러올 수 없습니다.</div>
   }
 
   return (
-    <div className="container">
-      <h1 className="page-title">내 프로필</h1>
-      <div className="grid-container">
-        <div className="card">
-          <div className="card-header">사용자 정보</div>
-          <div className="card-content">
-            <div className="avatar-container">
-              <div className="avatar">
-                <span className="avatar-fallback">{userData.userNickname.charAt(0)}</span>
-              </div>
-              <div className="info">
-                <h2>{userData.userName}</h2>
-                <p className="nickname">{userData.userNickname}</p>
+    <div className="container mx-auto px-4 py-8">
+      <Typography variant="h4" gutterBottom>
+        내 프로필
+      </Typography>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Card>
+          <CardHeader
+            title="사용자 정보"
+            titleTypographyProps={{ variant: 'h6' }}
+          />
+          <CardContent>
+            <div className="flex items-center space-x-4 mb-4">
+              <Avatar style={{ height: 80, width: 80 }}>
+                {userData.userNickname.charAt(0)}
+              </Avatar>
+              <div>
+                <Typography variant="h5">{userData.userName}</Typography>
+                <Typography color="textSecondary">{userData.userNickname}</Typography>
               </div>
             </div>
-            <div className="user-info">
-              <p><strong>ID:</strong> {userData.userId}</p>
-              <p><strong>Email:</strong> {userData.userEmail}</p>
-              <p><strong>생일:</strong> {new Date(userData.userBirthday).toLocaleDateString()}</p>
+            <div className="space-y-2">
+              <Typography><strong>ID:</strong> {userData.userId}</Typography>
+              <Typography><strong>Email:</strong> {userData.userEmail}</Typography>
+              <Typography><strong>생일:</strong> {new Date(userData.userBirthday).toLocaleDateString()}</Typography>
             </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-header">Level</div>
-          <div className="card-content">
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader
+            title="Level"
+            titleTypographyProps={{ variant: 'h6' }}
+          />
+          <CardContent>
             {renderLevelInfo}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
-
-      <div className="card">
-        <div className="card-header">풀었던 문제</div>
-        <div className="card-content">
-          <table>
-            <caption>사용자가 풀었던 문제 목록</caption>
-            <thead>
-              <tr>
-                <th>문제</th>
-                <th>날짜</th>
-                <th>결과</th>
-              </tr>
-            </thead>
-            <tbody>
-              {userData.problemHistory.map((problem) => (
-                <tr key={problem.id}>
-                  <td>{problem.title}</td>
-                  <td>{new Date(problem.date).toLocaleDateString()}</td>
-                  <td>
-                    <span className={problem.result === 'correct' ? 'status-correct' : 'status-incorrect'}>
-                      {problem.result === 'correct' ? '정답' : '오답'}
-                    </span>
-                  </td>
+      <Card className="mt-8">
+        <CardHeader
+          title="풀었던 문제"
+          titleTypographyProps={{ variant: 'h6' }}
+        />
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <caption className="sr-only">사용자가 풀었던 문제 목록</caption>
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-2">문제</th>
+                  <th className="text-left p-2">날짜</th>
+                  <th className="text-left p-2">결과</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {userData.problemHistory.map((problem) => (
+                  <tr key={problem.id} className="border-b">
+                    <td className="p-2">{problem.title}</td>
+                    <td className="p-2">{new Date(problem.date).toLocaleDateString()}</td>
+                    <td className="p-2">
+                      <span className={`px-2 py-1 rounded ${problem.result === 'correct' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {problem.result === 'correct' ? '정답' : '오답'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

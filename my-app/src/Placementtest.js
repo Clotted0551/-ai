@@ -66,13 +66,13 @@ function PlacementTest() {
     const 레벨 = 레벨계산(점수);
 
     try {
-      const 응답 = await fetch('/api/user/setlevel', {
+      const 응답 = await fetch('/api/user/leveltest', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ level: 레벨 }),
+        body: JSON.stringify({ userLevel: 레벨 }),
       });
 
       if (응답.ok) {

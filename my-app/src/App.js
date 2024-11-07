@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+
 import Main from './Main';
 import MyPage from './Mypage';
 import PlacementTest from './PlacementTest';

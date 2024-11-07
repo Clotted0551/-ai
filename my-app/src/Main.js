@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -33,7 +33,7 @@ const MainButton = styled(Button)(({ theme }) => ({
 export default function Main() {
   const [user, setUser] = useState(null)
   const [anchorEl, setAnchorEl] = useState(null)
-  const router = useRouter()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -47,24 +47,24 @@ export default function Main() {
           const userData = await response.json()
           setUser(userData)
         } else {
-          router.push('/')
+          navigate('/')
         }
       } catch (error) {
         console.error('Error fetching user data:', error)
-        router.push('/')
+        navigate('/')
       }
     }
 
     fetchUserData()
-  }, [router])
+  }, [navigate])
 
   const handleLogout = () => {
     localStorage.removeItem('token')
-    router.push('/')
+    navigate('/')
   }
 
   const handleProfileClick = () => {
-    router.push('/myPage')
+    navigate('/myPage')
     handleClose()
   }
 

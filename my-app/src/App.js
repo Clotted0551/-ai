@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import debounce from 'lodash/debounce';
 
 import Main from './Main';
 import MyPage from './Mypage';
@@ -15,13 +16,15 @@ function App() {
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // 상태 변수 선언
-  const [userId, setUserId] = useState('');
-  const [userNickname, setUserNickname] = useState('');
-  const [userName, setUserName] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-  const [userBirthday, setUserBirthday] = useState('');
-  const [userEmail, setUserEmail] = useState('');
+  // 상태를 하나의 객체로 관리
+  const [userData, setUserData] = useState({
+    userId: '',
+    userNickname: '',
+    userName: '',
+    userPassword: '',
+    userBirthday: '',
+    userEmail: '',
+  });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -29,6 +32,19 @@ function App() {
       setIsLoggedIn(true);
     }
   }, []);
+
+  // 디바운스된 상태 업데이트 함수
+  const debouncedSetUserData = useCallback(
+    debounce((field, value) => {
+      setUserData(prevData => ({ ...prevData, [field]: value }));
+    }, 300),
+    []
+  );
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    debouncedSetUserData(id, value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,18 +54,9 @@ function App() {
 
     const url = showSignUp ? '/api/user/signup' : '/api/user/login';
 
-    const userData = {
-      userId,
-      userNickname: showSignUp ? userNickname : undefined,
-      userName: showSignUp ? userName : undefined,
-      userPassword,
-      userBirthday: showSignUp ? userBirthday : undefined,
-      userEmail: showSignUp ? userEmail : undefined,
-    };
-
     const body = showSignUp
       ? JSON.stringify(userData)
-      : JSON.stringify({ userId, userPassword });
+      : JSON.stringify({ userId: userData.userId, userPassword: userData.userPassword });
 
     try {
       const response = await fetch(url, {
@@ -84,7 +91,7 @@ function App() {
     }
   };
 
-  const AuthForm = ({ handleSubmit }) => (
+  const AuthForm = React.memo(({ handleSubmit }) => (
     <div className="auth-form">
       <h2>{showSignUp ? '회원가입' : '로그인'}</h2>
       <p>{showSignUp ? '새 계정을 만들어주세요.' : '계정에 로그인하세요.'}</p>
@@ -94,8 +101,8 @@ function App() {
           <input
             id="userId"
             type="text"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
+            defaultValue={userData.userId}
+            onChange={handleInputChange}
             required
           />
         </div>
@@ -106,8 +113,8 @@ function App() {
               <input
                 id="userNickname"
                 type="text"
-                value={userNickname}
-                onChange={(e) => setUserNickname(e.target.value)}
+                defaultValue={userData.userNickname}
+                onChange={handleInputChange}
                 required
               />
             </div>
@@ -116,8 +123,8 @@ function App() {
               <input
                 id="userName"
                 type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
+                defaultValue={userData.userName}
+                onChange={handleInputChange}
                 required
               />
             </div>
@@ -126,8 +133,8 @@ function App() {
               <input
                 id="userEmail"
                 type="email"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
+                defaultValue={userData.userEmail}
+                onChange={handleInputChange}
                 required
               />
             </div>
@@ -136,8 +143,8 @@ function App() {
               <input
                 id="userBirthday"
                 type="text"
-                value={userBirthday}
-                onChange={(e) => setUserBirthday(e.target.value)}
+                defaultValue={userData.userBirthday}
+                onChange={handleInputChange}
                 pattern="\d{8}"
                 maxLength={8}
                 required
@@ -150,8 +157,8 @@ function App() {
           <input
             id="userPassword"
             type="password"
-            value={userPassword}
-            onChange={(e) => setUserPassword(e.target.value)}
+            defaultValue={userData.userPassword}
+            onChange={handleInputChange}
             required
           />
         </div>
@@ -166,7 +173,7 @@ function App() {
         </button>
       </p>
     </div>
-  );
+  ));
 
   return (
     <Router>
@@ -183,7 +190,7 @@ function App() {
           } />
           <Route path="/Main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
           <Route path="/Mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
-          <Route path="/placement-test" element={<PlacementTest />} />
+          <Route path="/PlacementTest" element={<PlacementTest />} />
           <Route path="/result" element={<Result />} />
         </Routes>
       </div>

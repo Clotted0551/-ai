@@ -27,7 +27,7 @@ function Result() {
   useEffect(() => {
     const fetchUserLevel = async () => {
       try {
-        const response = await fetch('/api/user/levelTest', {
+        const response = await fetch('/api/user/leveltest', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Main from './Main';
 import MyPage from './Mypage';
+import PlacementTest from './PlacementTest';
+import Result from './result';
 
 import './App.css';
 
@@ -179,7 +181,9 @@ function App() {
             )
           } />
           <Route path="/Main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
-          <Route path="/Mypage" element={isLoggedIn ? <Mypage /> : <Navigate to="/" />} />
+          <Route path="/Mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
+          <Route path="/placement-test" element={<PlacementTest />} />
+          <Route path="/result" element={<Result />} />
         </Routes>
       </div>
     </Router>

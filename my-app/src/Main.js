@@ -1,10 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Main.css'; // 이 파일에 스타일을 추가할 것입니다.
+'use client'
 
-function Main() {
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Avatar,
+  Menu,
+  MenuItem,
+  Container,
+  Box,
+  CircularProgress,
+  Paper,
+  Divider
+} from '@mui/material'
+import { styled } from '@mui/material/styles'
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+}))
+
+const MainButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+  padding: theme.spacing(1, 3),
+}))
+
+export default function Main() {
+  const [user, setUser] = useState(null)
+  const [anchorEl, setAnchorEl] = useState(null)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -13,66 +42,108 @@ function Main() {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
-        });
+        })
         if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
+          const userData = await response.json()
+          setUser(userData)
         } else {
-          navigate('/');
+          router.push('/')
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
-        navigate('/');
+        console.error('Error fetching user data:', error)
+        router.push('/')
       }
-    };
+    }
 
-    fetchUserData();
-  }, [navigate]);
+    fetchUserData()
+  }, [router])
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
-  };
+    localStorage.removeItem('token')
+    router.push('/')
+  }
 
   const handleProfileClick = () => {
-    navigate('/myPage');  // My Profile 버튼 클릭 시 myPage.js로 이동
-  };
+    router.push('/myPage')
+    handleClose()
+  }
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
 
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    )
   }
 
   return (
-    <div className="main">
-      <header>
-        <div className="header-content">
-          <h1>파인 에듀</h1>
-          <div className="user-menu">
-            <button className="avatar-button">
-              {user.nickname.charAt(0)}
-            </button>
-            <div className="dropdown-content">
-              <p>{user.nickname}</p>
-              <p>{user.email}</p>
-              <hr />
-              <button onClick={handleProfileClick}>My Profile</button> {/* 버튼 클릭 시 myPage로 이동 */}
-              <button onClick={handleLogout}>Log out</button>
-            </div>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            파인 에듀
+          </Typography>
+          <div>
+            <Button
+              onClick={handleMenu}
+              color="inherit"
+              startIcon={
+                <Avatar sx={{ width: 32, height: 32 }}>
+                  {user.nickname.charAt(0)}
+                </Avatar>
+              }
+            >
+              {user.nickname}
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem disabled>{user.nickname}</MenuItem>
+              <MenuItem disabled>{user.email}</MenuItem>
+              <Divider />
+              <MenuItem onClick={handleProfileClick}>My Profile</MenuItem>
+              <MenuItem onClick={handleLogout}>Log out</MenuItem>
+            </Menu>
           </div>
-        </div>
-      </header>
-      <main>
-        <div className="main-content">
-          <h2>환영합니다, {user.userName}!</h2>
-          <p>학습할 준비가 되셨나요?</p>
-          <div className="button-group">
-            <button className="main-button">배치고사</button>
-            <button className="main-button">학습시작!</button>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
+        </Toolbar>
+      </AppBar>
+      <Container component="main" maxWidth="sm" sx={{ mt: 4 }}>
+        <StyledPaper elevation={3}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            환영합니다, {user.userName}!
+          </Typography>
+          <Typography variant="h6" gutterBottom>
+            학습할 준비가 되셨나요?
+          </Typography>
+          <Box sx={{ mt: 3 }}>
+            <MainButton variant="contained" color="primary">
+              배치고사
+            </MainButton>
+            <MainButton variant="contained" color="secondary">
+              학습시작!
+            </MainButton>
+          </Box>
+        </StyledPaper>
+      </Container>
+    </Box>
+  )
 }
-
-export default Main;

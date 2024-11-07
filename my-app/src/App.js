@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import Main from './Main';
 import MyPage from './Mypage';
 import PlacementTest from './Placementtest';
+import Result from './Result';
 
 import './App.css';
 
@@ -182,6 +183,7 @@ function App() {
           <Route path="/Main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
           <Route path="/Mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
           <Route path="/PlacementTest" element={isLoggedIn ? <PlacementTest /> : <Navigate to="/" />} />
+          <Route path="/result" element={<Result />} />
         </Routes>
       </div>
     </Router>

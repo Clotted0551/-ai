@@ -1,7 +1,37 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Card, CardContent, CardHeader, Avatar, Typography, LinearProgress } from '@mui/material'
+import {
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+  Avatar,
+  LinearProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  Box,
+  CircularProgress
+} from '@mui/material'
+import { styled } from '@mui/material/styles'
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+}))
+
+const StyledCardContent = styled(CardContent)({
+  flexGrow: 1,
+})
 
 export default function MyProfile() {
   const [userData, setUserData] = useState(null)
@@ -35,106 +65,111 @@ export default function MyProfile() {
   const renderLevelInfo = useMemo(() => {
     if (!userData || userData.userLevel === null) {
       return (
-        <Typography align="center" variant="h6" gutterBottom>
-          배치전
-        </Typography>
+        <Box textAlign="center" mb={2}>
+          <Typography variant="h4">배치전</Typography>
+        </Box>
       )
     }
 
     const levelDisplay = userData.userLevel === 5 ? "5(max)" : userData.userLevel
     return (
       <>
-        <Typography align="center" variant="h3" gutterBottom>
-          {levelDisplay} <span style={{ fontSize: '1rem' }}>/ 5</span>
-        </Typography>
-        <LinearProgress variant="determinate" value={(userData.userLevel / 5) * 100} style={{ height: '10px', borderRadius: '4px' }} />
+        <Box textAlign="center" mb={2}>
+          <Typography variant="h3" component="span">{levelDisplay}</Typography>
+          <Typography variant="h5" component="span" ml={1}>/ 5</Typography>
+        </Box>
+        <LinearProgress variant="determinate" value={(userData.userLevel / 5) * 100} />
       </>
     )
   }, [userData])
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">로딩 중...</div>
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    )
   }
 
   if (error) {
-    return <div className="flex items-center justify-center h-screen text-red-500">{error}</div>
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Typography color="error">{error}</Typography>
+      </Box>
+    )
   }
 
   if (!userData) {
-    return <div className="flex items-center justify-center h-screen">사용자 데이터를 불러올 수 없습니다.</div>
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Typography>사용자 데이터를 불러올 수 없습니다.</Typography>
+      </Box>
+    )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Typography variant="h4" gutterBottom>
-        내 프로필
-      </Typography>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader
-            title="사용자 정보"
-            titleTypographyProps={{ variant: 'h6' }}
-          />
-          <CardContent>
-            <div className="flex items-center space-x-4 mb-4">
-              <Avatar style={{ height: 80, width: 80 }}>
-                {userData.userNickname.charAt(0)}
-              </Avatar>
-              <div>
-                <Typography variant="h5">{userData.userName}</Typography>
-                <Typography color="textSecondary">{userData.userNickname}</Typography>
-              </div>
-            </div>
-            <div className="space-y-2">
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h3" gutterBottom>내 프로필</Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <StyledCard>
+            <CardHeader title="사용자 정보" />
+            <StyledCardContent>
+              <Box display="flex" alignItems="center" mb={2}>
+                <Avatar sx={{ width: 64, height: 64, mr: 2 }}>
+                  {userData.userNickname.charAt(0)}
+                </Avatar>
+                <Box>
+                  <Typography variant="h5">{userData.userName}</Typography>
+                  <Typography color="textSecondary">{userData.userNickname}</Typography>
+                </Box>
+              </Box>
               <Typography><strong>ID:</strong> {userData.userId}</Typography>
               <Typography><strong>Email:</strong> {userData.userEmail}</Typography>
               <Typography><strong>생일:</strong> {new Date(userData.userBirthday).toLocaleDateString()}</Typography>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader
-            title="Level"
-            titleTypographyProps={{ variant: 'h6' }}
-          />
-          <CardContent>
-            {renderLevelInfo}
-          </CardContent>
-        </Card>
-      </div>
-      <Card className="mt-8">
-        <CardHeader
-          title="풀었던 문제"
-          titleTypographyProps={{ variant: 'h6' }}
-        />
+            </StyledCardContent>
+          </StyledCard>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <StyledCard>
+            <CardHeader title="Level" />
+            <StyledCardContent>
+              {renderLevelInfo}
+            </StyledCardContent>
+          </StyledCard>
+        </Grid>
+      </Grid>
+      <Card sx={{ mt: 3 }}>
+        <CardHeader title="풀었던 문제" />
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <caption className="sr-only">사용자가 풀었던 문제 목록</caption>
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-2">문제</th>
-                  <th className="text-left p-2">날짜</th>
-                  <th className="text-left p-2">결과</th>
-                </tr>
-              </thead>
-              <tbody>
+          <TableContainer component={Paper}>
+            <Table aria-label="사용자가 풀었던 문제 목록">
+              <TableHead>
+                <TableRow>
+                  <TableCell>문제</TableCell>
+                  <TableCell>날짜</TableCell>
+                  <TableCell>결과</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {userData.problemHistory.map((problem) => (
-                  <tr key={problem.id} className="border-b">
-                    <td className="p-2">{problem.title}</td>
-                    <td className="p-2">{new Date(problem.date).toLocaleDateString()}</td>
-                    <td className="p-2">
-                      <span className={`px-2 py-1 rounded ${problem.result === 'correct' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {problem.result === 'correct' ? '정답' : '오답'}
-                      </span>
-                    </td>
-                  </tr>
+                  <TableRow key={problem.id}>
+                    <TableCell>{problem.title}</TableCell>
+                    <TableCell>{new Date(problem.date).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={problem.result === 'correct' ? '정답' : '오답'}
+                        color={problem.result === 'correct' ? 'success' : 'error'}
+                        size="small"
+                      />
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </CardContent>
       </Card>
-    </div>
+    </Container>
   )
 }

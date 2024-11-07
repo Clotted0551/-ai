@@ -5,7 +5,7 @@ import debounce from 'lodash/debounce';
 import Main from './Main';
 import MyPage from './Mypage';
 import PlacementTest from './PlacementTest';
-import Result from './result';
+
 
 import './App.css';
 
@@ -190,8 +190,8 @@ function App() {
           } />
           <Route path="/Main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
           <Route path="/Mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
-          <Route path="/PlacementTest" element={<PlacementTest />} />
-          <Route path="/result" element={<Result />} />
+          <Route path="/PlacementTest" element={isLoggedIn ? <PlacementTest /> : <Navigate to="/" />} />
+
         </Routes>
       </div>
     </Router>

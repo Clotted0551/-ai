@@ -38,6 +38,10 @@ function Main() {
     navigate('/myPage');  // My Profile 버튼 클릭 시 myPage.js로 이동
   };
 
+  const PlacementTestClick = () => {
+    navigate('/placementTest')
+  }
+
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -66,7 +70,7 @@ function Main() {
           <h2>환영합니다, {user.userName}!</h2>
           <p>학습할 준비가 되셨나요?</p>
           <div className="button-group">
-            <button className="main-button">배치고사</button>
+            <button className="main-button" onClick={PlacementTestClick}>배치고사</button>
             <button className="main-button">학습시작!</button>
           </div>
         </div>

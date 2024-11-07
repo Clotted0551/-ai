@@ -180,6 +180,7 @@ function App() {
           } />
           <Route path="/Main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
           <Route path="/Mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
+          <Route path="/PlacementTest" element={isLoggedIn ? <PlacementTest /> : <Navigate to="/" />} />
         </Routes>
       </div>
     </Router>

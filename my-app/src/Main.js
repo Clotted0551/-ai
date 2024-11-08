@@ -78,7 +78,7 @@ export default function Main() {
   }
 
   const handlePlacementTest = () => {
-    navigate('/placementTest')
+    navigate('/PlacementTest')
   }
 
   const handleStartLearning = () => {

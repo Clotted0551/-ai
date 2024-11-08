@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -33,7 +33,8 @@ const MainButton = styled(Button)(({ theme }) => ({
 export default function Main() {
   const [user, setUser] = useState(null)
   const [anchorEl, setAnchorEl] = useState(null)
-  const router = useRouter()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -47,24 +48,24 @@ export default function Main() {
           const userData = await response.json()
           setUser(userData)
         } else {
-          router.push('/')
+          navigate('/')
         }
       } catch (error) {
         console.error('Error fetching user data:', error)
-        router.push('/')
+        navigate('/')
       }
     }
 
     fetchUserData()
-  }, [router])
+  }, [navigate])
 
   const handleLogout = () => {
     localStorage.removeItem('token')
-    router.push('/')
+    navigate('/')
   }
 
   const handleProfileClick = () => {
-    router.push('/myPage')
+    navigate('/myPage')
     handleClose()
   }
 
@@ -74,6 +75,14 @@ export default function Main() {
 
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const handlePlacementTest = () => {
+    navigate('/placementTest')
+  }
+
+  const handleStartLearning = () => {
+    navigate('/learning')
   }
 
   if (!user) {
@@ -135,10 +144,10 @@ export default function Main() {
             학습할 준비가 되셨나요?
           </Typography>
           <Box sx={{ mt: 3 }}>
-            <MainButton variant="contained" color="primary">
+            <MainButton variant="contained" color="primary" onClick={handlePlacementTest}>
               배치고사
             </MainButton>
-            <MainButton variant="contained" color="secondary">
+            <MainButton variant="contained" color="secondary" onClick={handleStartLearning}>
               학습시작!
             </MainButton>
           </Box>

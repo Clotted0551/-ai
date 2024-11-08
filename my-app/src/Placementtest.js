@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Container,
   Typography,
@@ -11,114 +11,92 @@ import {
   CardContent,
   Box,
   ThemeProvider,
-  createTheme,
   CssBaseline,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle
-} from '@mui/material'
-
-// 가상의 문제 데이터
-const 문제들 = [
-  {
-    question: "기준금리를 결정하는 주체는?",
-    options: [
-      "A. 중앙은행",
-      "B. 재정경제부",
-      "C. 상업은행",
-      "D. 금융위원회"
-    ],
-    answer: "A",
-    score: 1
-  },
-  {
-    question: "인플레이션이란?",
-    options: [
-      "A. 물가 상승",
-      "B. 물가 하락",
-      "C. 경제 성장",
-      "D. 경제 침체"
-    ],
-    answer: "A",
-    score: 1
-  },
-  // 추가 18개의 문제를 여기에 넣어주세요
-]
-
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    background: {
-      default: '#ffffff',
-      paper: '#f5f5f5',
-    },
-    text: {
-      primary: '#000000',
-      secondary: '#424242',
-    },
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-})
+} from '@mui/material';
+import { ThemeContext } from './ThemeContext';
 
 export default function PlacementTest() {
-  const [현재문제, set현재문제] = useState(0)
-  const [사용자답변, set사용자답변] = useState({})
-  const [제출완료, set제출완료] = useState(false)
-  const [결과대화상자열림, set결과대화상자열림] = useState(false)
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [userAnswers, setUserAnswers] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [userLevel, setUserLevel] = useState(null);
+  const theme = useContext(ThemeContext);
 
-  const 답변처리 = (event) => {
-    set사용자답변({
-      ...사용자답변,
-      [현재문제]: event.target.value,
-    })
-  }
-
-  const 다음문제 = () => {
-    if (현재문제 < 문제들.length - 1) {
-      set현재문제(현재문제 + 1)
-    }
-  }
-
-  const 이전문제 = () => {
-    if (현재문제 > 0) {
-      set현재문제(현재문제 - 1)
-    }
-  }
-
-  const 점수계산 = () => {
-    let 총점 = 0
-    문제들.forEach((문제, 인덱스) => {
-      if (사용자답변[인덱스] === 문제.answer) {
-        총점 += 문제.score
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch('/PlacementTest.json');
+        const data = await response.json();
+        setQuestions(data);
+      } catch (error) {
+        console.error('Error fetching questions:', error);
       }
-    })
-    return 총점
-  }
+    };
+    fetchQuestions();
+  }, []);
 
-  const 레벨계산 = (점수) => {
-    if (점수 >= 34) return 5
-    if (점수 >= 27) return 4
-    if (점수 >= 20) return 3
-    if (점수 >= 13) return 2
-    return 1
-  }
+  const handleAnswer = (event) => {
+    setUserAnswers({
+      ...userAnswers,
+      [currentQuestion]: event.target.value,
+    });
+  };
 
-  const 제출처리 = () => {
-    const 점수 = 점수계산()
-    const 레벨 = 레벨계산(점수)
-    set제출완료(true)
-    set결과대화상자열림(true)
-  }
+  const handleNext = () => {
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    }
+  };
 
-  const 대화상자닫기 = () => {
-    set결과대화상자열림(false)
+  const handlePrevious = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+    }
+  };
+
+  const calculateScore = () => {
+    let totalScore = 0;
+    questions.forEach((question, index) => {
+      if (userAnswers[index] === question.answer) {
+        totalScore += question.score;
+      }
+    });
+    return totalScore;
+  };
+
+  const calculateLevel = (score) => {
+    if (score >= 34) return 5;
+    if (score >= 27) return 4;
+    if (score >= 20) return 3;
+    if (score >= 13) return 2;
+    return 1;
+  };
+
+  const handleSubmit = () => {
+    const score = calculateScore();
+    const level = calculateLevel(score);
+    setUserLevel(level);
+    setIsSubmitted(true);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
+  if (questions.length === 0) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Typography>문제를 불러오는 중...</Typography>
+      </Box>
+    );
   }
 
   return (
@@ -131,24 +109,24 @@ export default function PlacementTest() {
         <Card>
           <CardContent>
             <Typography variant="h6" gutterBottom>
-              문제 {현재문제 + 1} / {문제들.length}
+              문제 {currentQuestion + 1} / {questions.length}
             </Typography>
             <Typography variant="body1" gutterBottom>
-              {문제들[현재문제].question}
+              {questions[currentQuestion].question}
             </Typography>
             <FormControl component="fieldset">
               <RadioGroup
                 aria-label="quiz"
                 name="quiz"
-                value={사용자답변[현재문제] || ''}
-                onChange={답변처리}
+                value={userAnswers[currentQuestion] || ''}
+                onChange={handleAnswer}
               >
-                {문제들[현재문제].options.map((옵션, 인덱스) => (
+                {questions[currentQuestion].options.map((option, index) => (
                   <FormControlLabel
-                    key={인덱스}
-                    value={옵션.charAt(0)}
+                    key={index}
+                    value={option.charAt(0)}
                     control={<Radio />}
-                    label={옵션}
+                    label={option}
                   />
                 ))}
               </RadioGroup>
@@ -158,49 +136,49 @@ export default function PlacementTest() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
           <Button
             variant="contained"
-            onClick={이전문제}
-            disabled={현재문제 === 0}
+            onClick={handlePrevious}
+            disabled={currentQuestion === 0}
           >
             이전
           </Button>
-          {현재문제 === 문제들.length - 1 ? (
+          {currentQuestion === questions.length - 1 ? (
             <Button
               variant="contained"
               color="primary"
-              onClick={제출처리}
-              disabled={제출완료}
+              onClick={handleSubmit}
+              disabled={isSubmitted}
             >
-              {제출완료 ? '제출 완료' : '제출'}
+              {isSubmitted ? '제출 완료' : '제출'}
             </Button>
           ) : (
             <Button
               variant="contained"
-              onClick={다음문제}
-              disabled={!사용자답변[현재문제]}
+              onClick={handleNext}
+              disabled={!userAnswers[currentQuestion]}
             >
               다음
             </Button>
           )}
         </Box>
         <Dialog
-          open={결과대화상자열림}
-          onClose={대화상자닫기}
+          open={dialogOpen}
+          onClose={handleCloseDialog}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">{"배치고사 결과"}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              당신의 레벨은 {레벨계산(점수계산())}입니다.
+              당신의 레벨은 {userLevel}입니다.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={대화상자닫기} color="primary" autoFocus>
+            <Button onClick={handleCloseDialog} color="primary" autoFocus>
               확인
             </Button>
           </DialogActions>
         </Dialog>
       </Container>
     </ThemeProvider>
-  )
+  );
 }

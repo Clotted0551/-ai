@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
@@ -14,7 +14,6 @@ import {
   Paper,
   Divider,
   ThemeProvider,
-  createTheme,
   CssBaseline,
   Grid,
   Card,
@@ -23,29 +22,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { School, PlayArrow } from '@mui/icons-material';
-
-// Create a context for the theme
-const ThemeContext = createContext();
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    background: {
-      default: '#ffffff',
-      paper: '#f5f5f5',
-    },
-    text: {
-      primary: '#000000',
-      secondary: '#424242',
-    },
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-});
+import { ThemeContext } from './ThemeContext';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -69,55 +46,54 @@ function MainContent() {
   const navigate = useNavigate();
   const theme = useContext(ThemeContext);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch('/api/user/profile', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-        } else {
-          navigate('/');
+  const fetchUserData = useCallback(async () => {
+    try {
+      const response = await fetch('/api/user/profile', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+      });
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+      } else {
         navigate('/');
       }
-    };
-
-    fetchUserData();
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      navigate('/');
+    }
   }, [navigate]);
 
-  const handleLogout = () => {
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
+
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('token');
     navigate('/');
-  };
+  }, [navigate]);
 
-  const handleProfileClick = () => {
+  const handleProfileClick = useCallback(() => {
     navigate('/Mypage');
     handleClose();
-  };
+  }, [navigate]);
 
-  const handleMenu = (event) => {
+  const handleMenu = useCallback((event) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
-  const handlePlacementTest = () => {
+  const handlePlacementTest = useCallback(() => {
     navigate('/PlacementTest');
-  };
+  }, [navigate]);
 
-  const handleStartLearning = () => {
-    // 학습 시작 로직 구현
+  const handleStartLearning = useCallback(() => {
     console.log('학습 시작');
-  };
+  }, []);
 
   if (!user) {
     return (
@@ -204,7 +180,7 @@ function MainContent() {
               <Grid item xs={12} sm={6}>
                 <Card>
                   <CardContent>
-                    <Typography variant="h5" component="div" gutterBottom> 
+                    <Typography variant="h5" component="div" gutterBottom>
                       학습 시작
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -233,9 +209,10 @@ function MainContent() {
 }
 
 export default function Main() {
+  const theme = useContext(ThemeContext);
   return (
-    <ThemeContext.Provider value={darkTheme}>
+    <ThemeProvider theme={theme}>
       <MainContent />
-    </ThemeContext.Provider>
+    </ThemeProvider>
   );
 }

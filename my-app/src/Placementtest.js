@@ -11,7 +11,7 @@ import {
   Typography,
   CircularProgress 
 } from '@material-ui/core';
-import 퀴즈데이터 from '../PlacementTest.json';
+import 퀴즈데이터 from './PlacementTest.json';
 
 const 레벨계산 = (점수) => {
   if (점수 >= 34) return 5;

@@ -13,7 +13,6 @@ import {
   CircularProgress,
   Paper,
   Divider,
-  ThemeProvider,
   CssBaseline,
   Grid,
   Card,
@@ -104,8 +103,6 @@ function MainContent() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
       <Box sx={{ flexGrow: 1, minHeight: '100vh', backgroundColor: 'background.default' }}>
         <AppBar position="static" color="primary">
           <Toolbar>
@@ -204,15 +201,11 @@ function MainContent() {
           </StyledPaper>
         </Container>
       </Box>
-    </ThemeProvider>
   );
 }
 
 export default function Main() {
-  const theme = useContext(ThemeContext);
   return (
-    <ThemeProvider theme={theme}>
-      <MainContent />
-    </ThemeProvider>
+    <MainContent />
   );
 }

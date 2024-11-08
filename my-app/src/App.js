@@ -1,25 +1,27 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { ThemeProvider, CssBaseline, CircularProgress, Box } from '@mui/material';
+import { ThemeProvider, CssBaseline, CircularProgress, Box, TextField, Button, Alert } from '@mui/material';
 import { ThemeContext, theme } from './ThemeContext';
 
 // Lazy load components
 const Main = lazy(() => import('./Main'));
 const MyPage = lazy(() => import('./Mypage'));
 const PlacementTest = lazy(() => import('./PlacementTest'));
-const AuthForm = lazy(() => import('./AuthForm'));
+// 제거: const AuthForm = lazy(() => import('./AuthForm'));
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [userData, setUserData] = useState({ userId: '', userPassword: '' }); // Added state for user data
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
   }, []);
 
-  const handleLogin = async (userData) => {
+  const handleLogin = async (event) => { // Modified handleLogin to accept event
+    event.preventDefault(); // Prevent default form submission
     try {
       const response = await fetch('/api/user/login', {
         method: 'POST',
@@ -64,6 +66,11 @@ function App() {
     }
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    handleLogin(event);
+  };
+
   return (
     <ThemeContext.Provider value={theme}>
       <ThemeProvider theme={theme}>
@@ -77,12 +84,42 @@ function App() {
             <Routes>
               <Route path="/" element={
                 isLoggedIn ? <Navigate to="/Main" /> : (
-                  <AuthForm
-                    onLogin={handleLogin}
-                    onSignup={handleSignup}
-                    error={error}
-                    successMessage={successMessage}
-                  />
+                  <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="userId"
+                      label="사용자 ID"
+                      name="userId"
+                      autoComplete="username"
+                      autoFocus
+                      value={userData.userId}
+                      onChange={(e) => setUserData({ ...userData, userId: e.target.value })}
+                    />
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      name="userPassword"
+                      label="비밀번호"
+                      type="password"
+                      id="userPassword"
+                      autoComplete="current-password"
+                      value={userData.userPassword}
+                      onChange={(e) => setUserData({ ...userData, userPassword: e.target.value })}
+                    />
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      sx={{ mt: 3, mb: 2 }}
+                    >
+                      로그인
+                    </Button>
+                    {error && <Alert severity="error">{error}</Alert>}
+                    {successMessage && <Alert severity="success">{successMessage}</Alert>}
+                  </Box>
                 )
               } />
               <Route path="/Main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
@@ -23,6 +23,9 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { School, PlayArrow } from '@mui/icons-material';
+
+// Create a context for the theme
+const ThemeContext = createContext();
 
 const darkTheme = createTheme({
   palette: {
@@ -60,10 +63,11 @@ const MainButton = styled(Button)(({ theme }) => ({
   fontWeight: 'bold',
 }));
 
-export default function Main() {
+function MainContent() {
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
+  const theme = useContext(ThemeContext);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -124,7 +128,7 @@ export default function Main() {
   }
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ flexGrow: 1, minHeight: '100vh', backgroundColor: 'background.default' }}>
         <AppBar position="static" color="primary">
@@ -225,5 +229,13 @@ export default function Main() {
         </Container>
       </Box>
     </ThemeProvider>
+  );
+}
+
+export default function Main() {
+  return (
+    <ThemeContext.Provider value={darkTheme}>
+      <MainContent />
+    </ThemeContext.Provider>
   );
 }

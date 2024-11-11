@@ -10,8 +10,8 @@ import {
   FormControlLabel, 
   Typography,
   CircularProgress 
-} from '@material-ui/core';
-import 퀴즈데이터 from './PlacementTest.json';
+} from '@mui/material';
+import 퀴즈데이터 from './Placementtest.json';
 
 const 레벨계산 = (점수) => {
   if (점수 >= 34) return 5;
@@ -63,10 +63,13 @@ export default function 배치고사() {
 
   const 결과제출 = async (레벨) => {
     try {
-      const 응답 = await fetch('/api/user/levelTest', {
-        method: 'POST',
+      const token = localStorage.getItem('token');
+
+      const 응답 = await fetch('/api/levelTest', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ level: 레벨 }),
       });

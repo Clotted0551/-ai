@@ -10,64 +10,39 @@ import {
   Box,
   Container,
   Grid,
-  IconButton
+  IconButton,
+  Alert,
+  LinearProgress
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { ArrowBack, Book } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const questions = [
-  {
-    id: 1,
-    level: 1,
-    text: "다음 중 경제학의 기본 개념이 아닌 것은?",
-    options: ["희소성", "영구성", "기회비용", "한계효용"],
-    correctAnswer: "2"
-  },
-  {
-    id: 2,
-    level: 2,
-    text: "GDP는 무엇의 약자인가?",
-    options: ["Global Domestic Product", "Gross Domestic Product", "General Domestic Product", "Grand Domestic Product"],
-    correctAnswer: "2"
-  },
-  {
-    id: 3,
-    level: 3,
-    text: "다음 중 수요의 법칙을 가장 잘 설명하는 것은?",
-    options: [
-      "가격이 상승하면 수요량이 증가한다",
-      "가격이 하락하면 수요량이 감소한다",
-      "가격이 상승하면 수요량이 감소한다",
-      "가격과 수요량은 관계가 없다"
-    ],
-    correctAnswer: "3"
-  },
-  {
-    id: 4,
-    level: 4,
-    text: "다음 중 케인즈 경제학의 주요 주장이 아닌 것은?",
-    options: [
-      "정부의 시장 개입이 필요하다",
-      "총수요 관리가 중요하다",
-      "시장은 항상 균형을 이룬다",
-      "불황 시 정부 지출을 늘려야 한다"
-    ],
-    correctAnswer: "3"
-  },
-  {
-    id: 5,
-    level: 5,
-    text: "다음 중 스태그플레이션(Stagflation)을 가장 잘 설명하는 것은?",
-    options: [
-      "경제 성장률이 높고 물가가 안정된 상태",
-      "경제 성장률이 낮고 실업률이 높은 상태",
-      "경제 성장률이 낮고 물가 상승률이 높은 상태",
-      "경제 성장률이 높고 실업률이 낮은 상태"
-    ],
-    correctAnswer: "3"
-  }
-];
+// API로부터 문제를 가져오는 함수 (실제 구현 필요)
+const fetchQuestions = async (userLevel) => {
+  // 여기에 실제 API 호출 로직 구현
+  // 임시 데이터:
+  return [
+    {
+      id: 1,
+      level: 2,
+      point: 2,
+      problem: "다음 중 경제학의 기본 개념이 아닌 것은?",
+      options: ["A. 희소성", "B. 영구성", "C. 기회비용", "D. 한계효용"],
+      correctAnswer: "2",
+      commentation: "영구성은 경제학의 기본 개념이 아닙니다. 경제학의 기본 개념에는 희소성, 기회비용, 한계효용 등이 포함됩니다."
+    },
+    {
+      id: 2,
+      level: 2,
+      point: 2,
+      problem: "GDP는 무엇의 약자인가?",
+      options: ["A. Global Domestic Product", "B. Gross Domestic Product", "C. General Domestic Product", "D. Grand Domestic Product"],
+      correctAnswer: "2",
+      commentation: "GDP는 Gross Domestic Product의 약자로, 국내 총생산을 의미합니다. 이는 한 국가 내에서 일정 기간 동안 생산된 모든 최종 재화와 서비스의 시장 가치의 합계를 나타냅니다."
+    },
+  ];
+};
 
 const StyledRadio = styled(Radio)(({ theme }) => ({
   '&:hover': {
@@ -95,13 +70,30 @@ export default function EconomicsQuiz() {
   const [score, setScore] = useState(0);
   const [showScoreAnimation, setShowScoreAnimation] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [showCommentation, setShowCommentation] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [userLevel, setUserLevel] = useState(1);
+  const [userPoints, setUserPoints] = useState(0);
 
   useEffect(() => {
-    if (questions.length > 0) {
-      const timer = setTimeout(() => setShowQuestion(true), 3000);
-      return () => clearTimeout(timer);
+    const loadQuestions = async () => {
+      const fetchedQuestions = await fetchQuestions(userLevel);
+      setQuestions(fetchedQuestions);
+      if (fetchedQuestions.length > 0) {
+        const timer = setTimeout(() => setShowQuestion(true), 3000);
+        return () => clearTimeout(timer);
+      }
+    };
+    loadQuestions();
+  }, [userLevel]);
+
+  useEffect(() => {
+    if (userPoints >= 50 && userLevel < 5) {
+      setUserLevel(prevLevel => Math.min(prevLevel + 1, 5));
+      setUserPoints(prevPoints => prevPoints - 50);
     }
-  }, []);
+  }, [userPoints, userLevel]);
 
   const handleAnswerChange = (event) => {
     setSelectedAnswer(event.target.value);
@@ -111,18 +103,20 @@ export default function EconomicsQuiz() {
     if (isChecking) return;
     setIsChecking(true);
     const currentQuestion = questions[currentQuestionIndex];
-    if (selectedAnswer === currentQuestion.correctAnswer) {
-      setScore(prevScore => prevScore + currentQuestion.level);
+    const correct = selectedAnswer === currentQuestion.correctAnswer;
+    setIsCorrect(correct);
+    if (correct) {
+      setScore(prevScore => prevScore + currentQuestion.point);
+      setUserPoints(prevPoints => prevPoints + currentQuestion.point);
       setShowScoreAnimation(true);
-      setTimeout(() => {
-        setShowScoreAnimation(false);
-        goToNextQuestion();
-        setIsChecking(false);
-      }, 1500);
-    } else {
+    }
+    setShowCommentation(true);
+    setTimeout(() => {
+      setShowScoreAnimation(false);
+      setShowCommentation(false);
       goToNextQuestion();
       setIsChecking(false);
-    }
+    }, 3000);
   };
 
   const goToNextQuestion = () => {
@@ -150,7 +144,7 @@ export default function EconomicsQuiz() {
               경제학 퀴즈
             </Typography>
           </Box>
-          <Box sx={{ width: 48 }} /> {/* 우측 여백 맞추기 */}
+          <Box sx={{ width: 48 }} />
         </Box>
 
         <Grid container spacing={4}>
@@ -204,18 +198,18 @@ export default function EconomicsQuiz() {
                             borderRadius: 1 
                           }}
                         >
-                          레벨 {currentQuestion.level}
+                          레벨 {currentQuestion?.level} (포인트: {currentQuestion?.point})
                         </Typography>
                       </Box>
                       <Typography variant="body1" gutterBottom>
-                        {currentQuestion.text}
+                        {currentQuestion?.problem}
                       </Typography>
                       <RadioGroup 
                         value={selectedAnswer} 
                         onChange={handleAnswerChange}
                         sx={{ my: 2 }}
                       >
-                        {currentQuestion.options.map((option, index) => (
+                        {currentQuestion?.options.map((option, index) => (
                           <FormControlLabel
                             key={index}
                             value={String(index + 1)}
@@ -237,6 +231,11 @@ export default function EconomicsQuiz() {
                       >
                         정답 확인
                       </Button>
+                      {showCommentation && (
+                        <Alert severity={isCorrect ? "success" : "error"} sx={{ mt: 2 }}>
+                          {currentQuestion.commentation}
+                        </Alert>
+                      )}
                     </motion.div>
                   </AnimatePresence>
                 )}
@@ -280,7 +279,7 @@ export default function EconomicsQuiz() {
                               fontWeight: 'bold'
                             }}
                           >
-                            +{currentQuestion.level}
+                            +{currentQuestion?.point}
                           </motion.span>
                         )}
                       </AnimatePresence>
@@ -288,11 +287,32 @@ export default function EconomicsQuiz() {
                   </Box>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
+                      사용자 레벨
+                    </Typography>
+                    <Typography variant="h6" component="span" fontWeight="bold">
+                      {userLevel}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      다음 레벨까지
+                    </Typography>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={(userPoints / 50) * 100} 
+                      sx={{ mt: 1, mb: 0.5 }}
+                    />
+                    <Typography variant="body2" align="right">
+                      {userPoints} / 50
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
                       난이도
                     </Typography>
                     <LevelIndicator>
                       {[1, 2, 3, 4, 5].map((level) => (
-                        <LevelDot key={level} active={level <= currentQuestion.level} />
+                        <LevelDot key={level} active={level <= (currentQuestion?.level || 0)} />
                       ))}
                     </LevelIndicator>
                   </Box>

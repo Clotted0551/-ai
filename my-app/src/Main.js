@@ -82,7 +82,7 @@ export default function Main() {
   }
 
   const handleStartLearning = () => {
-    navigate('/learning')
+    navigate('/Quiz')
   }
 
   if (!user) {

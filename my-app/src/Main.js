@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useRouter } from 'next/router'
+import Link from 'next/link'
 import {
   AppBar,
   Toolbar,
@@ -33,8 +34,7 @@ const MainButton = styled(Button)(({ theme }) => ({
 export default function Main() {
   const [user, setUser] = useState(null)
   const [anchorEl, setAnchorEl] = useState(null)
-  const navigate = useNavigate()
-  const location = useLocation()
+  const router = useRouter()
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -48,24 +48,24 @@ export default function Main() {
           const userData = await response.json()
           setUser(userData)
         } else {
-          navigate('/')
+          router.push('/')
         }
       } catch (error) {
         console.error('Error fetching user data:', error)
-        navigate('/')
+        router.push('/')
       }
     }
 
     fetchUserData()
-  }, [navigate])
+  }, [router])
 
   const handleLogout = () => {
     localStorage.removeItem('token')
-    navigate('/')
+    router.push('/')
   }
 
   const handleProfileClick = () => {
-    navigate('/myPage')
+    router.push('/myPage')
     handleClose()
   }
 
@@ -78,11 +78,11 @@ export default function Main() {
   }
 
   const handlePlacementTest = () => {
-    navigate('/PlacementTest')
+    router.push('/PlacementTest')
   }
 
   const handleStartLearning = () => {
-    navigate('/Quiz')
+    router.push('/Quiz')
   }
 
   if (!user) {
@@ -100,6 +100,9 @@ export default function Main() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             파인 에듀
           </Typography>
+          <Button color="inherit" component={Link} href="/portfolio">
+            최적화 포트폴리오!
+          </Button>
           <div>
             <Button
               onClick={handleMenu}
@@ -139,6 +142,11 @@ export default function Main() {
         <StyledPaper elevation={3}>
           <Typography variant="h4" component="h1" gutterBottom>
             환영합니다, {user.userName}!
+          </Typography>
+          <Typography variant="h6" gutterBottom>
+            {user.userLevel !== null 
+              ? `현재 레벨: ${user.userLevel}`
+              : "배치고사를 진행해 주세요!"}
           </Typography>
           <Typography variant="h6" gutterBottom>
             학습할 준비가 되셨나요?

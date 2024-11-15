@@ -1,8 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import Link from 'next/link'
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -34,7 +33,8 @@ const MainButton = styled(Button)(({ theme }) => ({
 export default function Main() {
   const [user, setUser] = useState(null)
   const [anchorEl, setAnchorEl] = useState(null)
-  const router = useRouter()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -48,16 +48,16 @@ export default function Main() {
           const userData = await response.json()
           setUser(userData)
         } else {
-          router.push('/')
+          navigate('/')
         }
       } catch (error) {
         console.error('Error fetching user data:', error)
-        router.push('/')
+        navigate('/')
       }
     }
 
     fetchUserData()
-  }, [router])
+  }, [navigate])
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -65,7 +65,7 @@ export default function Main() {
   }
 
   const handleProfileClick = () => {
-    router.push('/myPage')
+    navigate('/myPage')
     handleClose()
   }
 
@@ -78,11 +78,11 @@ export default function Main() {
   }
 
   const handlePlacementTest = () => {
-    router.push('/PlacementTest')
+    navigate('/PlacementTest')
   }
 
   const handleStartLearning = () => {
-    router.push('/Quiz')
+    navigate('/Quiz')
   }
 
   if (!user) {

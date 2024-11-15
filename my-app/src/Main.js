@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -61,7 +61,8 @@ export default function Main() {
 
   const handleLogout = () => {
     localStorage.removeItem('token')
-    router.push('/')
+    // router.push('/')
+    navigate('/')
   }
 
   const handleProfileClick = () => {

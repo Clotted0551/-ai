@@ -1,5 +1,6 @@
 // AuthForm.js
 import React, { useState } from 'react';
+import './AuthForm.css';
 
 function AuthForm({ setIsLoggedIn }) {
   const [showSignUp, setShowSignUp] = useState(false);

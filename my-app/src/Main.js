@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, Box, Button, Typography, AppBar, Toolbar, Menu, MenuItem } from '@mui/material';
-import styled from '@emotion/styled';
+import { styled } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#000000',
+    },
+    background: {
+      default: '#ffffff',
+    },
+  },
+});
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(6),
@@ -8,20 +20,18 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   flexDirection: 'column',
   alignItems: 'center',
   width: '100%',
-  maxWidth: '100%',  // 최대 너비 제한 제거
+  maxWidth: '100%',
   margin: '0 auto',
 }));
 
 const MainButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(2),
-  padding: theme.spacing(2, 6),
+  padding: `${theme.spacing(2)} ${theme.spacing(6)}`,
   fontSize: '1.2rem',
 }));
 
 export default function Main() {
   const [user, setUser] = useState(null);
-  // Remove this line
-  //const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -72,7 +82,7 @@ export default function Main() {
   }
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <AppBar position="static" color="primary">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -112,6 +122,6 @@ export default function Main() {
           </Box>
         </StyledPaper>
       </Container>
-    </>
+    </ThemeProvider>
   );
 }

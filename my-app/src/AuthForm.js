@@ -1,6 +1,12 @@
-// AuthForm.js
 import React, { useState } from 'react';
-import './AuthForm.css';
+import { 
+  Box, 
+  Button, 
+  TextField, 
+  Typography, 
+  Container, 
+  CircularProgress 
+} from '@mui/material';
 
 function AuthForm({ setIsLoggedIn }) {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -54,7 +60,7 @@ function AuthForm({ setIsLoggedIn }) {
       } else {
         if (data.token) {
           localStorage.setItem('token', data.token);
-          setIsLoggedIn(true);  // 로그인 성공 시 App.js의 isLoggedIn 상태를 업데이트
+          setIsLoggedIn(true);
         } else {
           throw new Error('토큰이 응답에 포함되지 않았습니다.');
         }
@@ -67,88 +73,117 @@ function AuthForm({ setIsLoggedIn }) {
   };
 
   return (
-    <div className="auth-form">
-      <h2>{showSignUp ? '회원가입' : '로그인'}</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="userId">아이디</label>
-          <input
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          {showSignUp ? '회원가입' : '로그인'}
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             id="userId"
-            type="text"
+            label="아이디"
+            name="userId"
+            autoComplete="username"
+            autoFocus
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
-            required
           />
-        </div>
-        {showSignUp && (
-          <>
-            <div className="form-group">
-              <label htmlFor="userNickname">닉네임</label>
-              <input
+          {showSignUp && (
+            <>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
                 id="userNickname"
-                type="text"
+                label="닉네임"
+                name="userNickname"
                 value={userNickname}
                 onChange={(e) => setUserNickname(e.target.value)}
-                required
               />
-            </div>
-            <div className="form-group">
-              <label htmlFor="userName">이름</label>
-              <input
+              <TextField
+                margin="normal"
+                required
+                fullWidth
                 id="userName"
-                type="text"
+                label="이름"
+                name="userName"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
-                required
               />
-            </div>
-            <div className="form-group">
-              <label htmlFor="userEmail">이메일</label>
-              <input
+              <TextField
+                margin="normal"
+                required
+                fullWidth
                 id="userEmail"
-                type="email"
+                label="이메일"
+                name="userEmail"
+                autoComplete="email"
                 value={userEmail}
                 onChange={(e) => setUserEmail(e.target.value)}
-                required
               />
-            </div>
-            <div className="form-group">
-              <label htmlFor="userBirthday">생년월일 (YYYYMMDD)</label>
-              <input
+              <TextField
+                margin="normal"
+                required
+                fullWidth
                 id="userBirthday"
-                type="text"
+                label="생년월일 (YYYYMMDD)"
+                name="userBirthday"
                 value={userBirthday}
                 onChange={(e) => setUserBirthday(e.target.value)}
-                pattern="\d{8}"
-                maxLength={8}
-                required
+                inputProps={{ maxLength: 8, pattern: "\\d{8}" }}
               />
-            </div>
-          </>
-        )}
-        <div className="form-group">
-          <label htmlFor="userPassword">비밀번호</label>
-          <input
-            id="userPassword"
+            </>
+          )}
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="userPassword"
+            label="비밀번호"
             type="password"
+            id="userPassword"
+            autoComplete="current-password"
             value={userPassword}
             onChange={(e) => setUserPassword(e.target.value)}
-            required
           />
-        </div>
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? '처리 중...' : showSignUp ? '가입하기' : '로그인'}
-        </button>
-      </form>
-      <p>
-        {showSignUp ? '이미 계정이 있으신가요?' : '계정이 없으신가요?'}
-        <button className="link-button" onClick={() => setShowSignUp(!showSignUp)}>
-          {showSignUp ? '로그인' : '회원가입'}
-        </button>
-      </p>
-      {error && <div className="error-message">{error}</div>}
-      {successMessage && <div className="success-message">{successMessage}</div>}
-    </div>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={isLoading}
+          >
+            {isLoading ? <CircularProgress size={24} /> : (showSignUp ? '가입하기' : '로그인')}
+          </Button>
+          <Button
+            fullWidth
+            onClick={() => setShowSignUp(!showSignUp)}
+          >
+            {showSignUp ? '로그인으로 돌아가기' : '회원가입'}
+          </Button>
+        </Box>
+      </Box>
+      {error && (
+        <Typography color="error" align="center" sx={{ mt: 2 }}>
+          {error}
+        </Typography>
+      )}
+      {successMessage && (
+        <Typography color="success" align="center" sx={{ mt: 2 }}>
+          {successMessage}
+        </Typography>
+      )}
+    </Container>
   );
 }
 

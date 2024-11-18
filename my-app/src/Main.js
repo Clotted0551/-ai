@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Paper, Box, Button, Typography, AppBar, Toolbar, Menu, MenuItem } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { 
+  Container, 
+  Paper, 
+  Box, 
+  Button, 
+  Typography, 
+  AppBar, 
+  Toolbar
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#000000',
-    },
-    background: {
-      default: '#ffffff',
-    },
-  },
-});
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(6),
@@ -30,8 +27,9 @@ const MainButton = styled(Button)(({ theme }) => ({
   fontSize: '1.2rem',
 }));
 
-export default function Main() {
+export default function Main({ setIsLoggedIn }) {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -45,53 +43,42 @@ export default function Main() {
           const userData = await response.json();
           setUser(userData);
         } else {
-          window.location.href = '/';
+          navigate('/');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
-        window.location.href = '/';
+        navigate('/');
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/';
-  };
-
-  const handleProfileClick = () => {
-    window.location.href = '/myPage';
-  };
-
-  const handlePlacementTest = () => {
-    window.location.href = '/PlacementTest';
-  };
-
-  const handleStartLearning = () => {
-    window.location.href = '/Quiz';
+    setIsLoggedIn(false);
+    navigate('/');
   };
 
   if (!user) {
     return (
-      <div className="loading">
-        <div className="spinner"></div>
-      </div>
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Typography>Loading...</Typography>
+      </Box>
     );
   }
 
   return (
-    <ThemeProvider theme={theme}>
+    <Box>
       <AppBar position="static" color="primary">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             파인 에듀
           </Typography>
-          <Button color="inherit" onClick={() => window.location.href = '/portfolio'}>
+          <Button color="inherit" onClick={() => navigate('/portfolio')}>
             나만의 포트폴리오 만들기
           </Button>
-          <Button color="inherit" onClick={handleProfileClick}>
+          <Button color="inherit" onClick={() => navigate('/mypage')}>
             마이페이지
           </Button>
           <Button color="inherit" onClick={handleLogout}>
@@ -113,15 +100,15 @@ export default function Main() {
             학습할 준비가 되셨나요?
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
-            <MainButton variant="contained" color="primary" onClick={handlePlacementTest} size="large">
+            <MainButton variant="contained" color="primary" onClick={() => navigate('/placement-test')} size="large">
               배치고사
             </MainButton>
-            <MainButton variant="contained" color="secondary" onClick={handleStartLearning} size="large">
+            <MainButton variant="contained" color="secondary" onClick={() => navigate('/quiz')} size="large">
               학습시작!
             </MainButton>
           </Box>
         </StyledPaper>
       </Container>
-    </ThemeProvider>
+    </Box>
   );
 }

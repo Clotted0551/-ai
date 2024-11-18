@@ -9,7 +9,8 @@ import {
   RadioGroup, 
   FormControlLabel, 
   Typography,
-  CircularProgress 
+  CircularProgress,
+  Box
 } from '@mui/material';
 import 퀴즈데이터 from './Placementtest.json';
 
@@ -77,9 +78,8 @@ export default function 배치고사() {
         throw new Error('레벨 테스트 결과 제출 실패');
       }
       set결과표시(true);
-      // 3초 후 메인 페이지로 이동
       setTimeout(() => {
-        navigate('/Main');
+        navigate('/main');
       }, 3000);
     } catch (에러) {
       console.error('레벨 테스트 결과 제출 중 에러:', 에러);
@@ -88,18 +88,16 @@ export default function 배치고사() {
 
   if (로딩중) {
     return (
-      <Card style={{ maxWidth: 400, margin: 'auto', marginTop: 20 }}>
-        <CardContent>
-          <CircularProgress />
-          <Typography>문제를 불러오는 중...</Typography>
-        </CardContent>
-      </Card>
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+        <Typography>문제를 불러오는 중...</Typography>
+      </Box>
     );
   }
 
   if (결과표시) {
     return (
-      <Card style={{ maxWidth: 400, margin: 'auto', marginTop: 20 }}>
+      <Card sx={{ maxWidth: 400, margin: 'auto', marginTop: 4 }}>
         <CardHeader title="배치고사 결과" />
         <CardContent>
           <Typography variant="h6" gutterBottom>
@@ -120,7 +118,7 @@ export default function 배치고사() {
 
   if (!문제) {
     return (
-      <Card style={{ maxWidth: 400, margin: 'auto', marginTop: 20 }}>
+      <Card sx={{ maxWidth: 400, margin: 'auto', marginTop: 4 }}>
         <CardContent>
           <Typography>문제를 불러오는 중 오류가 발생했습니다.</Typography>
         </CardContent>
@@ -129,7 +127,7 @@ export default function 배치고사() {
   }
 
   return (
-    <Card style={{ maxWidth: 600, margin: 'auto', marginTop: 20 }}>
+    <Card sx={{ maxWidth: 600, margin: 'auto', marginTop: 4 }}>
       <CardHeader title="배치고사" />
       <CardContent>
         <Typography variant="h6" gutterBottom>
@@ -153,7 +151,7 @@ export default function 배치고사() {
           color="primary"
           onClick={다음문제}
           disabled={!사용자답변[현재문제]}
-          style={{ marginTop: 20 }}
+          sx={{ marginTop: 2 }}
         >
           {현재문제 === 퀴즈데이터.length - 1 ? '제출' : '다음'}
         </Button>

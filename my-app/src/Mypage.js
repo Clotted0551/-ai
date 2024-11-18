@@ -1,6 +1,4 @@
-'use client'
-
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Container,
   Grid,
@@ -20,23 +18,23 @@ import {
   Chip,
   Box,
   CircularProgress
-} from '@mui/material'
-import { styled } from '@mui/material/styles'
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-}))
+}));
 
 const StyledCardContent = styled(CardContent)({
   flexGrow: 1,
-})
+});
 
 export default function MyProfile() {
-  const [userData, setUserData] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -45,22 +43,22 @@ export default function MyProfile() {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
-        })
+        });
         if (!response.ok) {
-          throw new Error('Failed to fetch user data')
+          throw new Error('Failed to fetch user data');
         }
-        const data = await response.json()
-        setUserData(data)
+        const data = await response.json();
+        setUserData(data);
       } catch (error) {
-        setError('사용자 데이터를 가져오는 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.')
-        console.error('Error fetching user data:', error)
+        setError('사용자 데이터를 가져오는 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.');
+        console.error('Error fetching user data:', error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchUserData()
-  }, [])
+    fetchUserData();
+  }, []);
 
   const renderLevelInfo = useMemo(() => {
     if (!userData || userData.userLevel === null) {
@@ -68,10 +66,10 @@ export default function MyProfile() {
         <Box textAlign="center" mb={2}>
           <Typography variant="h4">배치전</Typography>
         </Box>
-      )
+      );
     }
 
-    const levelDisplay = userData.userLevel === 5 ? "5(max)" : userData.userLevel
+    const levelDisplay = userData.userLevel === 5 ? "5(max)" : userData.userLevel;
     return (
       <>
         <Box textAlign="center" mb={2}>
@@ -80,15 +78,15 @@ export default function MyProfile() {
         </Box>
         <LinearProgress variant="determinate" value={(userData.userLevel / 5) * 100} />
       </>
-    )
-  }, [userData])
+    );
+  }, [userData]);
 
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress />
       </Box>
-    )
+    );
   }
 
   if (error) {
@@ -96,7 +94,7 @@ export default function MyProfile() {
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Typography color="error">{error}</Typography>
       </Box>
-    )
+    );
   }
 
   if (!userData) {
@@ -104,7 +102,7 @@ export default function MyProfile() {
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Typography>사용자 데이터를 불러올 수 없습니다.</Typography>
       </Box>
-    )
+    );
   }
 
   return (
@@ -171,5 +169,5 @@ export default function MyProfile() {
         </CardContent>
       </Card>
     </Container>
-  )
+  );
 }

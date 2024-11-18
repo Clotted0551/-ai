@@ -1,12 +1,37 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import Main from './Main';
 import MyPage from './MyPage';
 import PlacementTest from './PlacementTest';
 import AuthForm from './AuthForm';
 
-import './App.css';
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+    background: {
+      default: '#f5f5f5',
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
+  },
+});
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,25 +44,35 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <div className="app">
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
         <Routes>
           <Route
             path="/"
             element={
               isLoggedIn ? (
-                <Navigate to="/Main" />
+                <Navigate to="/main" />
               ) : (
                 <AuthForm setIsLoggedIn={setIsLoggedIn} />
               )
             }
           />
-          <Route path="/Main" element={isLoggedIn ? <Main /> : <Navigate to="/" />} />
-          <Route path="/MyPage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
-          <Route path="/PlacementTest" element={isLoggedIn ? <PlacementTest /> : <Navigate to="/" />} />
+          <Route 
+            path="/main" 
+            element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/mypage" 
+            element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/placement-test" 
+            element={isLoggedIn ? <PlacementTest /> : <Navigate to="/" />} 
+          />
         </Routes>
-      </div>
-    </Router>
+      </Router>
+    </ThemeProvider>
   );
 }
 

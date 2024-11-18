@@ -40,7 +40,8 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const MainButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
-  padding: theme.spacing(1, 4),
+  padding: `${theme.spacing(1)} ${theme.spacing(4)}`,
+  fontSize: '1.2rem',
 }));
 
 export default function Main() {

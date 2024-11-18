@@ -33,7 +33,8 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  maxWidth: 600,
+  width: '100%',
+  maxWidth: '100%',
   margin: '0 auto',
 }));
 

@@ -70,6 +70,10 @@ function App() {
             path="/placement-test" 
             element={isLoggedIn ? <PlacementTest /> : <Navigate to="/" />} 
           />
+          <Route 
+            path="/quiz" 
+            element={isLoggedIn ? <Quiz /> : <Navigate to="/" />} 
+          />
         </Routes>
       </Router>
     </ThemeProvider>

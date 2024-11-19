@@ -6,6 +6,7 @@ import Main from './Main';
 import MyPage from './MyPage';
 import PlacementTest from './PlacementTest';
 import AuthForm from './AuthForm';
+import Quiz from './Quiz'
 
 const theme = createTheme({
   palette: {

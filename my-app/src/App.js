@@ -7,6 +7,8 @@ import MyPage from './MyPage';
 import PlacementTest from './PlacementTest';
 import AuthForm from './AuthForm';
 import Quiz from './Quiz'
+import PortfolioSelect from './PortfolioSelect';
+import PortfolioResult from './PortfolioResult';
 
 const theme = createTheme({
   palette: {
@@ -75,6 +77,8 @@ function App() {
             path="/quiz" 
             element={isLoggedIn ? <Quiz /> : <Navigate to="/" />} 
           />
+          <Route path="/portfolio" element={<PortfolioSelect />} />
+          <Route path="/portfolio-result" element={<PortfolioResult />} />
         </Routes>
       </Router>
     </ThemeProvider>

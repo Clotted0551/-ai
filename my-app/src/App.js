@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Main from './Main';
-import MyPage from './MyPage';
-import PlacementTest from './PlacementTest';
+import MyPage from './Mypage';
+import PlacementTest from './Placementtest';
 import AuthForm from './AuthForm';
 import Quiz from './Quiz'
 import PortfolioSelect from './PortfolioSelect';

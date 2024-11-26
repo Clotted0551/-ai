@@ -1,14 +1,8 @@
+// src/Main.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Paper,
-  Box,
-  Button,
-  Typography,
-  AppBar,
-  Toolbar,
-} from '@mui/material';
+import { Container, Box, Typography, Paper, Button } from '@mui/material';
+import TopBar from './components/TopBar';  // TopBar 컴포넌트 import
 import { styled } from '@mui/material/styles';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -35,11 +29,6 @@ const MainButton = styled(Button)(({ theme }) => ({
     backgroundColor: '#000',
     color: '#fff',
   },
-}));
-
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor: '#000',
-  color: '#fff',
 }));
 
 export default function Main({ setIsLoggedIn }) {
@@ -85,22 +74,7 @@ export default function Main({ setIsLoggedIn }) {
 
   return (
     <Box>
-      <StyledAppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            파인 에듀
-          </Typography>
-          <Button color="inherit" onClick={() => navigate('/PortfolioSelect')}>
-            나만의 포트폴리오 만들기
-          </Button>
-          <Button color="inherit" onClick={() => navigate('/mypage')}>
-            마이페이지
-          </Button>
-          <Button color="inherit" onClick={handleLogout}>
-            로그아웃
-          </Button>
-        </Toolbar>
-      </StyledAppBar>
+      <TopBar onLogout={handleLogout} /> {/* 상단바 컴포넌트 사용 */}
       <Container component="main" maxWidth="lg" sx={{ mt: 10, mb: 4, px: { xs: 2, sm: 3, md: 4 } }}>
         <StyledPaper>
           <Typography variant="h2" component="h1" gutterBottom>

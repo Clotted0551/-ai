@@ -81,6 +81,27 @@ export default function MyProfile() {
     );
   }, [userData]);
 
+  const renderExpBar = useMemo(() => {
+    const userExp = userData?.userExp || 0; // userExp가 없으면 0으로 설정
+    const userMaxExp = 100; // 최대 경험치는 항상 100
+
+    return (
+      <>
+        <Box textAlign="center" mt={2} mb={2}>
+          <Typography variant="h6">경험치</Typography>
+          <LinearProgress 
+            variant="determinate" 
+            value={(userExp / userMaxExp) * 100} // userExp 비율로 계산
+            sx={{ marginTop: 1 }}
+          />
+          <Typography variant="body2" color="textSecondary" mt={1}>
+            {userExp} / {userMaxExp}
+          </Typography>
+        </Box>
+      </>
+    );
+  }, [userData]);
+
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -134,6 +155,7 @@ export default function MyProfile() {
             <StyledCardContent>
               {renderLevelInfo}
             </StyledCardContent>
+            {renderExpBar} {/* 경험치 바 추가 */}
           </StyledCard>
         </Grid>
       </Grid>

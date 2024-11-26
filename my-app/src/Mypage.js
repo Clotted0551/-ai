@@ -39,7 +39,7 @@ export default function MyProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch('/api/myPage', {
+        const response = await fetch('/api/user/myPage', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -82,7 +82,7 @@ export default function MyProfile() {
   }, [userData]);
 
   const renderExpBar = useMemo(() => {
-    const userExp = userData?.userExp || 0; // userExp가 없으면 0으로 설정
+    const userExp = userData ? userData.userExp : null; // userExp가 없으면 0으로 설정
     const userMaxExp = 100; // 최대 경험치는 항상 100
 
     return (

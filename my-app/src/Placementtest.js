@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Button, 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  Radio, 
-  RadioGroup, 
-  FormControlLabel, 
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
   Typography,
   CircularProgress,
   Box
 } from '@mui/material';
+import TopBar from './components/TopBar';  // 상단바 컴포넌트 import
 import 퀴즈데이터 from './Placementtest.json';
 
 const 레벨계산 = (점수) => {
@@ -127,35 +128,39 @@ export default function 배치고사() {
   }
 
   return (
-    <Card sx={{ maxWidth: 600, margin: 'auto', marginTop: 4 }}>
-      <CardHeader title="배치고사" />
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          문제 {현재문제 + 1}
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          {문제.question}
-        </Typography>
-        <RadioGroup value={사용자답변[현재문제]} onChange={(e) => 답변처리(e.target.value)}>
-          {문제.options.map((옵션, 인덱스) => (
-            <FormControlLabel
-              key={인덱스}
-              value={옵션.charAt(0)}
-              control={<Radio />}
-              label={옵션}
-            />
-          ))}
-        </RadioGroup>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={다음문제}
-          disabled={!사용자답변[현재문제]}
-          sx={{ marginTop: 2 }}
-        >
-          {현재문제 === 퀴즈데이터.length - 1 ? '제출' : '다음'}
-        </Button>
-      </CardContent>
-    </Card>
+    <Box>
+      <TopBar />  {/* 상단바 컴포넌트를 사용 */}
+      <Card sx={{ maxWidth: 600, margin: 'auto', marginTop: 4 }}>
+        <CardHeader title="배치고사" />
+        <CardContent>
+          {/* 문제 번호 표시 */}
+          <Typography variant="h6" gutterBottom>
+            문제 {현재문제 + 1} / {퀴즈데이터.length}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            {문제.question}
+          </Typography>
+          <RadioGroup value={사용자답변[현재문제]} onChange={(e) => 답변처리(e.target.value)}>
+            {문제.options.map((옵션, 인덱스) => (
+              <FormControlLabel
+                key={인덱스}
+                value={옵션.charAt(0)}
+                control={<Radio />}
+                label={옵션}
+              />
+            ))}
+          </RadioGroup>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={다음문제}
+            disabled={!사용자답변[현재문제]}
+            sx={{ marginTop: 2 }}
+          >
+            {현재문제 === 퀴즈데이터.length - 1 ? '제출' : '다음'}
+          </Button>
+        </CardContent>
+      </Card>
+    </Box>
   );
 }

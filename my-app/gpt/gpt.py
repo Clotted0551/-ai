@@ -19,7 +19,7 @@ def connect_to_db():
 # 문제 생성 함수
 def generate_economic_question(level):
     prompt = f"""
-    레벨 {level}에 맞는 경제학 문제를 생성하세요. 
+    문제 난이도를 1부터 5까지라고 했을 때 레벨 {level}에 맞는 경제퀴즈를 생성해주세요. 
     각 문제는 4지선다형 객관식 문제로 작성해야 하며, 정답과 해설을 포함해야 합니다. 
     형식은 다음과 같습니다:
     문제: [문제 내용]
@@ -44,12 +44,13 @@ def generate_economic_question(level):
     return response['choices'][0]['message']['content'].strip()
 
 # MySQL에 데이터 저장 함수
-def save_to_db(level, question, answer, explanation):
+def save_to_db(level, question, answer, explanation, model):
     connection = connect_to_db()
     cursor = connection.cursor()
     try:
-        query = "INSERT INTO economic_questions (level, question, answer, explanation) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (level, question, answer, explanation))
+        # 테이블에 model 항목 추가
+        query = "INSERT INTO economic_questions (level, question, answer, explanation, model) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(query, (level, question, answer, explanation, model))
         connection.commit()
         print(f"Level {level} data saved successfully!")
     except Exception as e:
@@ -70,7 +71,10 @@ if __name__ == "__main__":
             answer = answer.strip()
             explanation = explanation.strip()
 
+            # 모델 마킹
+            model = "gpt"
+
             # MySQL에 저장
-            save_to_db(level, question, answer, explanation)
+            save_to_db(level, question, answer, explanation, model)
         else:
             print(f"Level {level} 문제 생성에 실패했습니다.")

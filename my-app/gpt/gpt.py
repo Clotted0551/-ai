@@ -10,10 +10,10 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # MySQL 연결 설정
 def connect_to_db():
     return mysql.connector.connect(
-        host="localhost",  # MySQL 호스트 주소
-        user="your_username",  # MySQL 사용자명
-        password="your_password",  # MySQL 비밀번호
-        database="your_database"  # 사용할 데이터베이스
+        host="database-1.c94qw4eqglka.ap-northeast-2.rds.amazonaws.com",  # MySQL 호스트 주소
+        user="admin",  # MySQL 사용자명
+        password="wkdalswns0551!",  # MySQL 비밀번호
+        database="economy"  # 사용할 데이터베이스
     )
 
 # 문제 생성 함수
@@ -49,7 +49,7 @@ def save_to_db(level, question, answer, explanation, model):
     cursor = connection.cursor()
     try:
         # 테이블에 model 항목 추가
-        query = "INSERT INTO economic_questions (level, question, answer, explanation, model) VALUES (%s, %s, %s, %s, %s)"
+        query = "INSERT INTO quiz (quiz_level, quiz_question, quiz_answer, quiz_comment, quiz_category) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(query, (level, question, answer, explanation, model))
         connection.commit()
         print(f"Level {level} data saved successfully!")

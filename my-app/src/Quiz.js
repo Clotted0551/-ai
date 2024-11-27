@@ -19,7 +19,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 }));
 
 const AnswerFeedback = styled(Typography)(({ correct }) => ({
-  color: correct ? 'green' : 'red',
+  color: correct === true ? 'green' : correct === false ? 'red' : 'inherit',
   fontWeight: 'bold',
   marginTop: '10px',
 }));
@@ -29,6 +29,7 @@ function QuizApp() {
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
   const [quizCategory, setQuizCategory] = useState('gpt');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchQuiz();
@@ -36,13 +37,27 @@ function QuizApp() {
 
   const fetchQuiz = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`/api/quiz?category=${quizCategory}`);
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
       const data = await response.json();
+
+      if (!data || !data.quizQuestion || !data.quizAnswer) {
+        throw new Error('Incomplete quiz data received.');
+      }
+
       setQuiz(data);
       setSelectedAnswer('');
       setShowFeedback(false);
     } catch (error) {
       console.error('Error fetching quiz:', error);
+      setQuiz({
+        quizQuestion: '퀴즈를 불러오는 중 오류가 발생했습니다. 다시 시도해주세요.',
+        quizAnswer: '',
+        quizComment: '',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,13 +73,19 @@ function QuizApp() {
     setQuizCategory(event.target.value);
   };
 
-  if (!quiz) return <Typography>Loading...</Typography>;
+  if (loading) return <Typography>Loading...</Typography>;
 
-  const [question, ...choices] = quiz.quizQuestion.split('\n');
+  if (!quiz) return <Typography>퀴즈 데이터를 불러오지 못했습니다.</Typography>;
+
+  const [question, ...choices] = (quiz.quizQuestion || '').split('\n');
+  if (!question || choices.length === 0) {
+    return <Typography>퀴즈 데이터가 잘못되었습니다.</Typography>;
+  }
 
   return (
     <Container maxWidth="sm">
       <StyledPaper elevation={3}>
+        {/* Category Selector */}
         <FormControl fullWidth margin="normal">
           <Select
             value={quizCategory}
@@ -76,10 +97,12 @@ function QuizApp() {
           </Select>
         </FormControl>
 
+        {/* Quiz Question */}
         <Typography variant="h5" gutterBottom>
           {question}
         </Typography>
 
+        {/* Quiz Options */}
         <FormControl component="fieldset">
           <RadioGroup
             value={selectedAnswer}
@@ -87,7 +110,7 @@ function QuizApp() {
           >
             {choices.map((choice, index) => (
               <FormControlLabel
-                key={index}
+                key={`${choice}-${index}`}
                 value={choice.substring(3)}
                 control={<Radio />}
                 label={choice}
@@ -96,6 +119,7 @@ function QuizApp() {
           </RadioGroup>
         </FormControl>
 
+        {/* Submit Button */}
         <Button
           variant="contained"
           color="primary"
@@ -106,13 +130,14 @@ function QuizApp() {
           제출
         </Button>
 
+        {/* Feedback and Explanation */}
         {showFeedback && (
           <>
             <AnswerFeedback correct={selectedAnswer === quiz.quizAnswer}>
               {selectedAnswer === quiz.quizAnswer ? '정답입니다!' : '틀렸습니다.'}
             </AnswerFeedback>
             <Typography variant="body1" style={{ marginTop: '10px' }}>
-              {quiz.quizComment}
+              {quiz.quizComment || '추가 설명이 없습니다.'}
             </Typography>
             <Button
               variant="contained"

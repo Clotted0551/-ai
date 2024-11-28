@@ -32,13 +32,19 @@ const QuizApp = () => {
 
   const fetchQuiz = async () => {
     try {
-      const response = await fetch(`/api/quiz?category=${quiz_Category}`);
-      const data = await response.json();
-      setQuiz(data.quiz);
-      setUserLevel(data.userLevel);
-      setUserExp(data.userExp);
-      setSelectedAnswer(null);
-      setShowResult(false);
+      const response = await fetch(`/api/quiz?category=${quizCategory}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setQuiz(data.quiz);
+        setUserLevel(data.userLevel);
+        setUserExp(data.userExp);
+        setSelectedAnswer(null);
+        setShowResult(false);
+      } 
     } catch (error) {
       console.error('Error fetching quiz:', error);
     }

@@ -32,7 +32,7 @@ const QuizApp = () => {
 
   const fetchQuiz = async () => {
     try {
-      const response = await fetch(`/api/quiz?category=${quizCategory}`);
+      const response = await fetch(`/api/quiz?category=${quiz_Category}`);
       const data = await response.json();
       setQuiz(data.quiz);
       setUserLevel(data.userLevel);

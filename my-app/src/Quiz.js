@@ -11,7 +11,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Box
 } from '@mui/material';
 import TopBar from './components/TopBar';
 
@@ -22,7 +23,8 @@ const QuizApp = () => {
   const [quizCategory, setQuizCategory] = useState('gpt');
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
-  const [levelUpModal, setLevelUpModal] = useState(false);
+  const [levelChangeModal, setLevelChangeModal] = useState(false);
+  const [levelChangeMessage, setLevelChangeMessage] = useState('');
 
   useEffect(() => {
     fetchQuiz();
@@ -32,7 +34,9 @@ const QuizApp = () => {
     try {
       const response = await fetch(`/api/quiz?category=${quizCategory}`);
       const data = await response.json();
-      setQuiz(data);
+      setQuiz(data.quiz);
+      setUserLevel(data.userLevel);
+      setUserExp(data.userExp);
       setSelectedAnswer(null);
       setShowResult(false);
     } catch (error) {
@@ -44,20 +48,41 @@ const QuizApp = () => {
     setSelectedAnswer(answer);
     setShowResult(true);
 
-    const isCorrect = answer === quiz.quizAnswer;
+    const isCorrect = answer === quiz.quiz_Answer;
     let newExp = userExp + (isCorrect ? 5 : -3);
+    let newLevel = userLevel;
 
     if (newExp >= 100) {
-      setUserLevel(prevLevel => prevLevel + 1);
+      newLevel = userLevel + 1;
       newExp -= 100;
-      setLevelUpModal(true);
+      setLevelChangeMessage(`축하합니다! 레벨이 ${newLevel}로 승급하였습니다!`);
+      setLevelChangeModal(true);
     } else if (newExp < 0 && userLevel > 1) {
-      setUserLevel(prevLevel => prevLevel - 1);
-      newExp = 97; // Set to 97 so that losing 3 exp doesn't immediately trigger another level down
-      setLevelUpModal(true);
+      newLevel = userLevel - 1;
+      newExp = 97;
+      setLevelChangeMessage(`${newLevel}로 강등당했습니다.`);
+      setLevelChangeModal(true);
     }
 
     setUserExp(newExp);
+    setUserLevel(newLevel);
+
+    // 서버에 업데이트된 레벨과 경험치 전송
+    updateUserDataOnServer(newLevel, newExp);
+  };
+
+  const updateUserDataOnServer = async (level, exp) => {
+    try {
+      await fetch('/api/quiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ level, exp }),
+      });
+    } catch (error) {
+      console.error('Error updating user data:', error);
+    }
   };
 
   const handleNextQuestion = () => {
@@ -67,7 +92,7 @@ const QuizApp = () => {
   const renderQuizContent = () => {
     if (!quiz) return null;
 
-    const [question, ...options] = quiz.quizQuestion.split('\n');
+    const [question, ...options] = quiz.quiz_Question.split('\n');
 
     return (
       <>
@@ -80,7 +105,7 @@ const QuizApp = () => {
             style={{ 
               marginTop: '10px',
               backgroundColor: showResult 
-                ? (index + 1).toString() === quiz.quizAnswer 
+                ? (index + 1).toString() === quiz.quiz_Answer 
                   ? 'green' 
                   : (index + 1).toString() === selectedAnswer 
                     ? 'red' 
@@ -96,9 +121,9 @@ const QuizApp = () => {
         {showResult && (
           <Typography 
             variant="body1" 
-            style={{ marginTop: '20px', color: selectedAnswer === quiz.quizAnswer ? 'green' : 'red' }}
+            style={{ marginTop: '20px', color: selectedAnswer === quiz.quiz_Answer ? 'green' : 'red' }}
           >
-            {quiz.quizComment}
+            {quiz.quiz_Comment}
           </Typography>
         )}
         {showResult && (
@@ -119,36 +144,33 @@ const QuizApp = () => {
     <>
       <TopBar onLogout={() => console.log('Logout clicked')} />
       <Container maxWidth="sm" style={{ marginTop: '20px' }}>
-        <Typography variant="h4" gutterBottom>레벨: {userLevel}</Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h4">레벨: {userLevel}</Typography>
+          <FormControl style={{ minWidth: 120 }}>
+            <InputLabel>퀴즈 카테고리</InputLabel>
+            <Select
+              value={quizCategory}
+              onChange={(e) => setQuizCategory(e.target.value)}
+            >
+              <MenuItem value="gpt">GPT</MenuItem>
+              <MenuItem value="ollama">Ollama</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
         <LinearProgress 
           variant="determinate" 
           value={userExp} 
           style={{ marginBottom: '20px', height: '10px' }}
         />
-        <FormControl fullWidth style={{ marginBottom: '20px' }}>
-          <InputLabel>퀴즈 카테고리</InputLabel>
-          <Select
-            value={quizCategory}
-            onChange={(e) => setQuizCategory(e.target.value)}
-          >
-            <MenuItem value="gpt">GPT</MenuItem>
-            <MenuItem value="ollama">Ollama</MenuItem>
-          </Select>
-        </FormControl>
         {renderQuizContent()}
       </Container>
-      <Dialog open={levelUpModal} onClose={() => setLevelUpModal(false)}>
+      <Dialog open={levelChangeModal} onClose={() => setLevelChangeModal(false)}>
         <DialogTitle>레벨 변경</DialogTitle>
         <DialogContent>
-          <Typography>
-            {userExp >= 100 
-              ? `축하합니다! 레벨이 ${userLevel}로 승급하였습니다!`
-              : `${userLevel}로 강등당했습니다.`
-            }
-          </Typography>
+          <Typography>{levelChangeMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setLevelUpModal(false)}>확인</Button>
+          <Button onClick={() => setLevelChangeModal(false)}>확인</Button>
         </DialogActions>
       </Dialog>
     </>

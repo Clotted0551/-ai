@@ -39,7 +39,7 @@ const QuizApp = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setQuiz(data.quiz);
+        setQuiz(data.quiz[0]);
         setUserLevel(data.userLevel);
         setUserExp(data.userExp);
         setSelectedAnswer(null);
@@ -54,7 +54,7 @@ const QuizApp = () => {
     setSelectedAnswer(answer);
     setShowResult(true);
 
-    const isCorrect = answer === quiz.quiz_Answer;
+    const isCorrect = answer === quiz.quizAnswer;
     let newExp = userExp + (isCorrect ? 5 : -3);
     let newLevel = userLevel;
 
@@ -98,7 +98,7 @@ const QuizApp = () => {
   const renderQuizContent = () => {
     if (!quiz) return null;
 
-    const [question, ...options] = quiz.quiz_Question.split('\n');
+    const [question, ...options] = quiz.quizQuestion.split('\n');
 
     return (
       <>
@@ -111,7 +111,7 @@ const QuizApp = () => {
             style={{ 
               marginTop: '10px',
               backgroundColor: showResult 
-                ? (index + 1).toString() === quiz.quiz_Answer 
+                ? (index + 1).toString() === quiz.quizAnswer 
                   ? 'green' 
                   : (index + 1).toString() === selectedAnswer 
                     ? 'red' 
@@ -127,9 +127,9 @@ const QuizApp = () => {
         {showResult && (
           <Typography 
             variant="body1" 
-            style={{ marginTop: '20px', color: selectedAnswer === quiz.quiz_Answer ? 'green' : 'red' }}
+            style={{ marginTop: '20px', color: selectedAnswer === quiz.quizAnswer ? 'green' : 'red' }}
           >
-            {quiz.quiz_Comment}
+            {quiz.quizComment}
           </Typography>
         )}
         {showResult && (

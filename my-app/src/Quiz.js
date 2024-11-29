@@ -17,7 +17,8 @@ import {
 import TopBar from './components/TopBar';
 
 const QuizApp = () => {
-  const [quiz, setQuiz] = useState(null);
+  const [quiz, setQuiz] = useState([]); // 문제 묶음을 배열로 관리
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // 현재 문제의 인덱스
   const [userLevel, setUserLevel] = useState(1);
   const [userExp, setUserExp] = useState(0);
   const [quizCategory, setQuizCategory] = useState('gpt');
@@ -39,11 +40,12 @@ const QuizApp = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setQuiz(data.quiz[0]);
+        setQuiz(data.quiz); // 문제 묶음을 배열로 저장
         setUserLevel(data.userLevel);
         setUserExp(data.userExp);
         setSelectedAnswer(null);
         setShowResult(false);
+        setCurrentQuestionIndex(0); // 첫 번째 문제부터 시작
       } 
     } catch (error) {
       console.error('Error fetching quiz:', error);
@@ -54,7 +56,8 @@ const QuizApp = () => {
     setSelectedAnswer(answer);
     setShowResult(true);
 
-    const isCorrect = answer === quiz.quizAnswer;
+    const currentQuestion = quiz[currentQuestionIndex];
+    const isCorrect = answer === currentQuestion.quizAnswer;
     let newExp = userExp + (isCorrect ? 5 : -3);
     let newLevel = userLevel;
 
@@ -92,13 +95,21 @@ const QuizApp = () => {
   };
 
   const handleNextQuestion = () => {
-    fetchQuiz();
+    if (currentQuestionIndex < quiz.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedAnswer(null);
+      setShowResult(false);
+    } else {
+      // 문제 묶음을 다 풀었을 경우, 새로운 문제 묶음을 가져옴
+      fetchQuiz();
+    }
   };
 
   const renderQuizContent = () => {
-    if (!quiz) return null;
+    if (quiz.length === 0) return null;
 
-    const [question, ...options] = quiz.quizQuestion.split('\n');
+    const currentQuestion = quiz[currentQuestionIndex];
+    const [question, ...options] = currentQuestion.quizQuestion.split('\n');
 
     return (
       <>
@@ -111,7 +122,7 @@ const QuizApp = () => {
             style={{ 
               marginTop: '10px',
               backgroundColor: showResult 
-                ? (index + 1).toString() === quiz.quizAnswer 
+                ? (index + 1).toString() === currentQuestion.quizAnswer 
                   ? 'green' 
                   : (index + 1).toString() === selectedAnswer 
                     ? 'red' 
@@ -127,9 +138,9 @@ const QuizApp = () => {
         {showResult && (
           <Typography 
             variant="body1" 
-            style={{ marginTop: '20px', color: selectedAnswer === quiz.quizAnswer ? 'green' : 'red' }}
+            style={{ marginTop: '20px', color: selectedAnswer === currentQuestion.quizAnswer ? 'green' : 'red' }}
           >
-            {quiz.quizComment}
+            {currentQuestion.quizComment}
           </Typography>
         )}
         {showResult && (
@@ -184,4 +195,3 @@ const QuizApp = () => {
 };
 
 export default QuizApp;
-

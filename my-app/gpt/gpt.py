@@ -27,7 +27,7 @@ def generate_economic_question(level):
     2. [선지 2]
     3. [선지 3]
     4. [선지 4]
-    정답: [정답 번호]
+    정답: [정답 번호](only number)
     해설: [정답의 이유]
     """
 

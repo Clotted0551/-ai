@@ -80,7 +80,7 @@ const QuizApp = () => {
     updateUserDataOnServer(newLevel, newExp);
 
     // 문제 히스토리 서버에 저장
-    saveProblemHistory(currentQuestion.id, currentQuestion.title, isCorrect ? 'correct' : 'incorrect');
+    saveProblemHistory(currentQuestion.id, currentQuestion.quizQuestion, isCorrect ? 'correct' : 'incorrect');
   };
 
   const updateUserDataOnServer = async (level, exp) => {
@@ -98,7 +98,7 @@ const QuizApp = () => {
     }
   };
 
-  const saveProblemHistory = async (problemId, title, result) => {
+  const saveProblemHistory = async (Id, question, result) => {
     try {
       const response = await fetch('/api/history', {
         method: 'POST',
@@ -107,8 +107,8 @@ const QuizApp = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          problemId,
-          title,
+          Id,
+          question,  
           result,
         }),
       });

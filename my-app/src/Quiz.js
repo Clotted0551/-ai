@@ -100,7 +100,7 @@ const QuizApp = () => {
 
   const saveProblemHistory = async (problemId, title, result) => {
     try {
-      const response = await fetch('/api/quiz', {
+      const response = await fetch('/api/history', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

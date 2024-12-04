@@ -78,6 +78,9 @@ const QuizApp = () => {
 
     // 서버에 업데이트된 레벨과 경험치 전송
     updateUserDataOnServer(newLevel, newExp);
+
+    // 문제 히스토리 서버에 저장
+    saveProblemHistory(currentQuestion.id, currentQuestion.title, isCorrect ? 'correct' : 'incorrect');
   };
 
   const updateUserDataOnServer = async (level, exp) => {
@@ -92,6 +95,29 @@ const QuizApp = () => {
       });
     } catch (error) {
       console.error('Error updating user data:', error);
+    }
+  };
+
+  const saveProblemHistory = async (problemId, title, result) => {
+    try {
+      const response = await fetch('/api/quiz', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          problemId,
+          title,
+          result,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save problem history');
+      }
+    } catch (error) {
+      console.error('Error saving problem history:', error);
     }
   };
 
@@ -110,20 +136,17 @@ const QuizApp = () => {
     if (quiz.length === 0) return null;
 
     const currentQuestion = quiz[currentQuestionIndex];
-    
-
 
     // 문제와 선지 분리 및 필터링 추가
-  const lines = currentQuestion.quizQuestion.split('\n');
+    const lines = currentQuestion.quizQuestion.split('\n');
     
     // 첫 번째 줄은 항상 질문으로 간주
-  const question = lines[0].trim();
+    const question = lines[0].trim();
     
     // 나머지 줄에서 선지만 추출
-  const options = lines.slice(1).filter(line => {
-      // 줄이 숫자로 시작하면 유지
-    return /^\d\./.test(line.trim());
-  });
+    const options = lines.slice(1).filter(line => {
+      return /^\d\./.test(line.trim());
+    });
 
     return (
       <>

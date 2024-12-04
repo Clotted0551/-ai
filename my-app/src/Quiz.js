@@ -98,7 +98,7 @@ const QuizApp = () => {
     }
   };
 
-  const saveProblemHistory = async (Id, question, result) => {
+  const saveProblemHistory = async (id, question, result) => {
     try {
       const response = await fetch('/api/history', {
         method: 'POST',
@@ -107,9 +107,9 @@ const QuizApp = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          Id,
-          question,  
-          result,
+          Id: id,         // 문제 ID
+          question,       // 문제 내용 (quizQuestion)
+          result,         // 정답 여부
         }),
       });
 
@@ -224,7 +224,9 @@ const QuizApp = () => {
           <Typography>{levelChangeMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setLevelChangeModal(false)}>확인</Button>
+          <Button onClick={() => setLevelChangeModal(false)} color="primary">
+            닫기
+          </Button>
         </DialogActions>
       </Dialog>
     </>

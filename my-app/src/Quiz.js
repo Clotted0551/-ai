@@ -109,7 +109,12 @@ const QuizApp = () => {
     if (quiz.length === 0) return null;
 
     const currentQuestion = quiz[currentQuestionIndex];
-    const [question, ...options] = currentQuestion.quizQuestion.split('\n');
+    
+    // 문제와 선지 분리 후 필터링 추가
+    const [question, ...options] = currentQuestion.quizQuestion.split('\n').filter(line => {
+      // 줄이 숫자로 시작하지 않으면 제거
+      return /^\d\./.test(line.trim());
+    });
 
     return (
       <>
@@ -132,7 +137,7 @@ const QuizApp = () => {
             onClick={() => handleAnswerSelect((index + 1).toString())}
             disabled={showResult}
           >
-            {option}
+            {option.trim()} {/* 선지 앞뒤 공백 제거 */}
           </Button>
         ))}
         {showResult && (

@@ -85,6 +85,7 @@ const QuizApp = () => {
       await fetch('/api/quiz', {
         method: 'POST',
         headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ level, exp }),

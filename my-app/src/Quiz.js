@@ -111,10 +111,23 @@ const QuizApp = () => {
     const currentQuestion = quiz[currentQuestionIndex];
     
     // 문제와 선지 분리 후 필터링 추가
-    const [question, ...options] = currentQuestion.quizQuestion.split('\n').filter(line => {
-      // 줄이 숫자로 시작하지 않으면 제거
-      return /^\d\./.test(line.trim());
-    });
+  const [question, ...options] = currentQuestion.quizQuestion.split('\n').reduce(
+    (acc, line, index) => {
+      if (index === 0) {
+      // 첫 번째 줄은 question으로 처리
+        acc[0] = line.trim();
+      } else {
+      // 나머지 줄은 options으로 처리, 숫자로 시작하지 않는 경우 제외
+        if (/^\d\./.test(line.trim())) {
+          acc[1].push(line.trim());
+        }
+    }
+      return acc;
+   },
+    ['', []] // 초기값: question은 빈 문자열, options는 빈 배열
+);
+
+  console.log({ question, options });
 
     return (
       <>

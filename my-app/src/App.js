@@ -66,6 +66,10 @@ function App() {
             element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />} 
           />
           <Route 
+            path="/PortfolioPage" 
+            element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />} 
+          />
+          <Route 
             path="/mypage" 
             element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} 
           />
@@ -73,6 +77,7 @@ function App() {
             path="/placement-test" 
             element={isLoggedIn ? <PlacementTest /> : <Navigate to="/" />} 
           />
+          
           <Route 
             path="/quiz" 
             element={isLoggedIn ? <Quiz /> : <Navigate to="/" />} 

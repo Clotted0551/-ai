@@ -66,24 +66,23 @@ function App() {
             element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />} 
           />
           <Route 
-            path="/PortfolioPage" 
+            path="/portfolioPage" 
             element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />} 
           />
           <Route 
             path="/mypage" 
-            element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} 
+            element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />}  
           />
           <Route 
             path="/placement-test" 
-            element={isLoggedIn ? <PlacementTest /> : <Navigate to="/" />} 
+            element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />} 
           />
           
           <Route 
             path="/quiz" 
-            element={isLoggedIn ? <Quiz /> : <Navigate to="/" />} 
+            element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />} 
           />
-          <Route path="/portfolio" element={<PortfolioSelect />} />
-          <Route path="/portfolio-result" element={<PortfolioResult />} />
+          
         </Routes>
       </Router>
     </ThemeProvider>

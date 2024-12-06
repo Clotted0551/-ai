@@ -18,7 +18,7 @@ const TopBar = ({ onLogout }) => {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           파인 에듀
         </Typography>
-        <Button color="inherit" onClick={() => navigate('/PortfolioSelect')}>
+        <Button color="inherit" onClick={() => navigate('/PortfolioPage')}>
           나만의 포트폴리오 만들기
         </Button>
         <Button color="inherit" onClick={() => navigate('/mypage')}>

@@ -17,15 +17,16 @@ import {
 import TopBar from './components/TopBar';
 
 const QuizApp = () => {
-  const [quiz, setQuiz] = useState([]); // 문제 묶음을 배열로 관리
+  const [quiz, setQuiz] = useState([]); // 문제 묶음
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // 현재 문제의 인덱스
-  const [userLevel, setUserLevel] = useState(1);
-  const [userExp, setUserExp] = useState(0);
-  const [quizCategory, setQuizCategory] = useState('gpt');
+  const [userLevel, setUserLevel] = useState(1); // 유저 레벨
+  const [userExp, setUserExp] = useState(0); // 유저 경험치
+  const [quizCategory, setQuizCategory] = useState('gpt'); // 퀴즈 카테고리
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [levelChangeModal, setLevelChangeModal] = useState(false);
   const [levelChangeMessage, setLevelChangeMessage] = useState('');
+  const [isSaving, setIsSaving] = useState(false); // 저장 로딩 상태
 
   useEffect(() => {
     fetchQuiz();
@@ -40,13 +41,15 @@ const QuizApp = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setQuiz(data.quiz); // 문제 묶음을 배열로 저장
+        setQuiz(data.quiz);
         setUserLevel(data.userLevel);
         setUserExp(data.userExp);
         setSelectedAnswer(null);
         setShowResult(false);
-        setCurrentQuestionIndex(0); // 첫 번째 문제부터 시작
-      } 
+        setCurrentQuestionIndex(0);
+      } else {
+        console.error('Failed to fetch quiz:', response.statusText);
+      }
     } catch (error) {
       console.error('Error fetching quiz:', error);
     }
@@ -58,16 +61,18 @@ const QuizApp = () => {
 
     const currentQuestion = quiz[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.quizAnswer;
+
+    // 경험치 및 레벨 업데이트 로직
     let newExp = userExp + (isCorrect ? 5 : -3);
     let newLevel = userLevel;
 
     if (newExp >= 100) {
-      newLevel = userLevel + 1;
+      newLevel += 1;
       newExp -= 100;
       setLevelChangeMessage(`축하합니다! 레벨이 ${newLevel}로 승급하였습니다!`);
       setLevelChangeModal(true);
     } else if (newExp < 0 && userLevel > 1) {
-      newLevel = userLevel - 1;
+      newLevel -= 1;
       newExp = 97;
       setLevelChangeMessage(`${newLevel}로 강등당했습니다.`);
       setLevelChangeModal(true);
@@ -76,10 +81,10 @@ const QuizApp = () => {
     setUserExp(newExp);
     setUserLevel(newLevel);
 
-    // 서버에 업데이트된 레벨과 경험치 전송
+    // 서버에 업데이트된 데이터 전송
     updateUserDataOnServer(newLevel, newExp);
 
-    // 문제 히스토리 서버에 저장
+    // 문제 히스토리 저장
     saveProblemHistory(currentQuestion.id, currentQuestion.quizQuestion, isCorrect ? 'correct' : 'incorrect');
   };
 
@@ -99,25 +104,38 @@ const QuizApp = () => {
   };
 
   const saveProblemHistory = async (id, question, result) => {
+    if (!id || !question || !result) {
+      console.error('Invalid problem data:', { id, question, result });
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Authorization token is missing');
+      return;
+    }
+
+    setIsSaving(true); // 저장 중 상태 활성화
     try {
       const response = await fetch('/api/history', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          Id: id,         // 문제 ID
-          question,       // 문제 내용 (quizQuestion)
-          result,         // 정답 여부
-        }),
+        body: JSON.stringify({ id, question, result }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save problem history');
+        const errorData = await response.json();
+        console.error('Failed to save problem history:', errorData.message || response.statusText);
+      } else {
+        console.log('Problem history saved successfully');
       }
     } catch (error) {
       console.error('Error saving problem history:', error);
+    } finally {
+      setIsSaving(false); // 저장 중 상태 비활성화
     }
   };
 
@@ -127,8 +145,7 @@ const QuizApp = () => {
       setSelectedAnswer(null);
       setShowResult(false);
     } else {
-      // 문제 묶음을 다 풀었을 경우, 새로운 문제 묶음을 가져옴
-      fetchQuiz();
+      fetchQuiz(); // 모든 문제를 푼 경우 새 문제 가져오기
     }
   };
 
@@ -136,17 +153,9 @@ const QuizApp = () => {
     if (quiz.length === 0) return null;
 
     const currentQuestion = quiz[currentQuestionIndex];
-
-    // 문제와 선지 분리 및 필터링 추가
     const lines = currentQuestion.quizQuestion.split('\n');
-    
-    // 첫 번째 줄은 항상 질문으로 간주
     const question = lines[0].trim();
-    
-    // 나머지 줄에서 선지만 추출
-    const options = lines.slice(1).filter(line => {
-      return /^\d\./.test(line.trim());
-    });
+    const options = lines.slice(1).filter(line => /^\d\./.test(line.trim()));
 
     return (
       <>
@@ -156,7 +165,7 @@ const QuizApp = () => {
             key={index}
             variant="contained"
             fullWidth
-            style={{ 
+            style={{
               marginTop: '10px',
               backgroundColor: showResult 
                 ? (index + 1).toString() === currentQuestion.quizAnswer 
@@ -169,7 +178,7 @@ const QuizApp = () => {
             onClick={() => handleAnswerSelect((index + 1).toString())}
             disabled={showResult}
           >
-            {option.trim()} {/* 선지 앞뒤 공백 제거 */}
+            {option.trim()}
           </Button>
         ))}
         {showResult && (
@@ -216,6 +225,7 @@ const QuizApp = () => {
           value={userExp} 
           style={{ marginBottom: '20px', height: '10px' }}
         />
+        {isSaving && <Typography variant="body2">히스토리 저장 중...</Typography>}
         {renderQuizContent()}
       </Container>
       <Dialog open={levelChangeModal} onClose={() => setLevelChangeModal(false)}>

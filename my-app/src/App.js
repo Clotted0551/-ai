@@ -71,16 +71,16 @@ function App() {
           />
           <Route 
             path="/mypage" 
-            element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />}  
+            element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} 
           />
           <Route 
             path="/placement-test" 
-            element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />} 
+            element={isLoggedIn ? <PlacementTest /> : <Navigate to="/" />}  
           />
           
           <Route 
             path="/quiz" 
-            element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />} 
+            element={isLoggedIn ? <Quiz /> : <Navigate to="/" />} 
           />
           
         </Routes>

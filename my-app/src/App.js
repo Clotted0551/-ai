@@ -7,8 +7,8 @@ import MyPage from './Mypage';
 import PlacementTest from './Placementtest';
 import AuthForm from './AuthForm';
 import Quiz from './Quiz'
-import PortfolioSelect from './PortfolioSelect';
-import PortfolioResult from './PortfolioResult';
+// import PortfolioSelect from './PortfolioSelect';
+// import PortfolioResult from './PortfolioResult';
 
 const theme = createTheme({
   palette: {

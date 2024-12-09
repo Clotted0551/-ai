@@ -67,7 +67,7 @@ function App() {
           />
           <Route 
             path="/portfolioPage" 
-            element={isLoggedIn ? <Main setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" />} 
+            element={isLoggedIn ? <portfolioPage /> : <Navigate to="/" />}  
           />
           <Route 
             path="/mypage" 

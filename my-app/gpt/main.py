@@ -107,3 +107,4 @@ async def generate_quiz(request: QuizRequest):
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
+

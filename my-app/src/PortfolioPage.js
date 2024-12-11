@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Grid, Box, Typography, CircularProgress } from '@mui/material';
 import { Face, Group, Elderly } from '@mui/icons-material';
-import data from '../results/recession_portfolio_result.json';
+import data from '../result/recession_portfolio_result.json';
 
 const PortfolioPage = () => {
   const [step, setStep] = useState(0);

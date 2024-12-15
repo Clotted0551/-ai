@@ -78,6 +78,11 @@ function App() {
             element={isLoggedIn ? <PlacementTest /> : <Navigate to="/" />}  
           />
           
+          
+          <Route 
+            path="/page" 
+            element={isLoggedIn ? <Page /> : <Navigate to="/" />}  
+          />
           <Route 
             path="/quiz" 
             element={isLoggedIn ? <Quiz /> : <Navigate to="/" />} 

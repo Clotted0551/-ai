@@ -7,6 +7,7 @@ import MyPage from './Mypage';
 import PlacementTest from './Placementtest';
 import AuthForm from './AuthForm';
 import Quiz from './Quiz'
+import Page from './page'
 // import PortfolioSelect from './PortfolioSelect';
 // import PortfolioResult from './PortfolioResult';
 
@@ -80,7 +81,7 @@ function App() {
           
           
           <Route 
-            path="page" 
+            path="/page" 
             element={isLoggedIn ? <Page /> : <Navigate to="/" />}  
           />
           <Route 

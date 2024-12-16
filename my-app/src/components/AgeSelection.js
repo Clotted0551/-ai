@@ -1,13 +1,13 @@
 import React from 'react'
 import { Button, Grid, Typography } from '@mui/material'
-import { Baby, Person, ElderlyWoman } from '@mui/icons-material'
+import { WorkOutlineOutlined, Person, ElderlyWoman } from '@mui/icons-material'
 
 const AgeSelection = ({ onSelect }) => {
   return (
     <Grid container spacing={2} justifyContent="center">
       {[
-        { label: '청년층', icon: Baby },
-        { label: '중년층', icon: Person },
+        { label: '청년층', icon: Person },
+        { label: '중년층', icon: WorkOutlineOutlined },
         { label: '장년층', icon: ElderlyWoman }
       ].map(({ label, icon: Icon }) => (
         <Grid item key={label}>

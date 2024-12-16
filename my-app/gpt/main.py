@@ -4,12 +4,15 @@ import openai
 import mysql.connector
 from dotenv import load_dotenv
 import os
+from transformers import pipeline
 
 # .env 파일에서 API 키 불러오기
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = FastAPI()
+
+# llama_pipeline = pipeline("text-generation", model="llama3.2:latest")
 
 # MySQL 연결 설정
 def connect_to_db():
@@ -23,9 +26,10 @@ def connect_to_db():
 # 문제 요청 모델 정의
 class QuizRequest(BaseModel):
     level: int  # 문제 난이도 (1~5)
+    model_type: str
 
 # 문제 생성 함수
-def generate_economic_question(level: int):
+def generate_openai_question(level: int):
     prompt = f"""
     문제 난이도를 1부터 5까지라고 했을 때 레벨 {level}에 맞는 경제퀴즈(주식, 채권, 부동산 정책, 경제역사 등)를 생성해주세요. 
     각 문제는 4지선다형 객관식 문제로 작성해야 하며, 정답과 해설을 포함해야 합니다. 
@@ -53,6 +57,32 @@ def generate_economic_question(level: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
 
+
+def generate_llama_question(level: int):
+    prompt = f"""
+    문제 난이도를 1부터 5까지라고 했을 때 레벨 {level}에 맞는 경제퀴즈(주식, 채권, 부동산 정책, 경제역사등등..)를 생성해주세요. 
+    각 문제는 4지선다형 객관식 문제로 작성해야 하며, 정답과 해설을 포함해야 합니다. 
+    형식은 다음과 같습니다:
+    문제: [문제 내용]
+    1. [선지 1]
+    2. [선지 2]
+    3. [선지 3]
+    4. [선지 4]
+    정답: [정답 번호]
+    해설: [정답의 이유]
+    """
+    url = "http://localhost:11434/v1/llama3.2:latest/generate"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "input": prompt,
+        "max_tokens": 300,
+        "temperature": 0.7
+    }
+
+    result = llama_pipeline(prompt, max_length=300, num_return_sequences=1)
+    return result[0]["generated_text"]
+
+
 # MySQL에 데이터 저장 함수
 def save_to_db(level, question, answer, explanation, model):
     connection = connect_to_db()
@@ -75,13 +105,19 @@ def save_to_db(level, question, answer, explanation, model):
 @app.post("/generate-quiz/")
 async def generate_quiz(request: QuizRequest):
     level = request.level
+    model_type = request.model_type
     if not (1 <= level <= 5):
         raise HTTPException(status_code=400, detail="Level must be between 1 and 5.")
 
+    if model_type not in ["gpt", "llama"]:
+        raise HTTPException(status_code=400, detail="Model type must be 'openai' or 'llama'.")
+
     try:
+        if model_type == "gpt":
         # 퀴즈 생성
-        result = generate_economic_question(level)
-        print(f"Generated result: {result}")
+            result = generate_economic_question(level)
+        else:
+            result = generate_llama_question(level)
 
         if "문제:" in result and "정답:" in result and "해설:" in result:
             question_part, answer_explanation = result.split("정답:", 1)
@@ -105,6 +141,4 @@ async def generate_quiz(request: QuizRequest):
     except Exception as e:
         print(f"Error: {e}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
 

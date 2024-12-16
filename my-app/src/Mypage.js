@@ -35,6 +35,7 @@ export default function MyProfile() {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [quizData, setQuizData] = useState({ quiz1: [], quiz2: [] });
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -48,6 +49,8 @@ export default function MyProfile() {
           throw new Error('Failed to fetch user data');
         }
         const data = await response.json();
+        const storedQuizData = JSON.parse(localStorage.getItem('quizData')) || { quiz1: [], quiz2: [] };
+        setQuizData(storedQuizData);
         setUserData(data);
       } catch (error) {
         setError('사용자 데이터를 가져오는 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.');
@@ -167,11 +170,11 @@ export default function MyProfile() {
               <TableHead>
                 <TableRow>
                   <TableCell>문제</TableCell>
-                  <TableCell>날짜</TableCell>
-                  <TableCell>결과</TableCell>
+                  {/* <TableCell>날짜</TableCell>
+                  <TableCell>결과</TableCell> */}
                 </TableRow>
               </TableHead>
-              <TableBody>
+              {/* <TableBody>
                 {userData.problemHistory.map((problem) => (
                   <TableRow key={problem.id}>
                     <TableCell>{problem.title}</TableCell>
@@ -185,7 +188,31 @@ export default function MyProfile() {
                     </TableCell>
                   </TableRow>
                 ))}
+              </TableBody> */}
+              <TableBody>
+                {quizData.quiz1.length > 0 || quizData.quiz2.length > 0 ? (
+                  [...quizData.quiz1, ...quizData.quiz2].map((problem, index) => {
+                    // 문제 제목을 \n 앞까지만 가져오기
+                    const problemTitle = problem.split('\n')[0];
+                          
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{problemTitle}</TableCell>
+                        <TableCell>
+                          {/* 필요 시 다른 데이터나 상태 추가 */}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                <TableRow>
+                  <TableCell colSpan={3} align="center">
+                  <Typography>문제 풀이 이력이 없습니다.</Typography>
+                  </TableCell>
+                </TableRow>
+                )}
               </TableBody>
+
             </Table>
           </TableContainer>
         </CardContent>

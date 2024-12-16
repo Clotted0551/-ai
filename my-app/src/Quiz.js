@@ -86,19 +86,18 @@ const QuizApp = () => {
     // 서버에 업데이트된 데이터 전송
     updateUserDataOnServer(newLevel, newExp);
 
-    
-    
     // 문제 히스토리 저장
     saveProblemHistory(currentQuestion.id, currentQuestion.quizQuestion, isCorrect ? 'correct' : 'incorrect');
 
     const cachedQuizData = JSON.parse(localStorage.getItem('quizData')) || { quiz1: [], quiz2: [] };
 
     const quizData = {
-      quiz1: cachedQuizData.quiz2[0] ? [cachedQuizData.quiz2[0]] : [], 
-      quiz2: [currentQuestion.quizQuestion, ...cachedQuizData.quiz2].slice(0, 1), 
+      quiz1: [currentQuestion.quizQuestion, ...cachedQuizData.quiz1].slice(0, 1), 
+      quiz2: cachedQuizData.quiz1[0] ? [cachedQuizData.quiz1[0]] : [], 
+      
     };
 
-  // 로컬 스토리지에 저장
+    // 로컬 스토리지에 저장
     localStorage.setItem('quizData', JSON.stringify(quizData));
   };
 

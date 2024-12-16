@@ -80,7 +80,7 @@ function App() {
           
           
           <Route 
-            path="my-app\src\app\page.js" 
+            path="page" 
             element={isLoggedIn ? <Page /> : <Navigate to="/" />}  
           />
           <Route 

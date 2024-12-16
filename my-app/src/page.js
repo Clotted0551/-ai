@@ -1,14 +1,33 @@
 'use client'
 
-import React from 'react'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+import { 
+  Container, 
+  Card, 
+  CardContent, 
+  Typography, 
+  Box,
+  CircularProgress
+} from '@mui/material'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 import AgeSelection from './components/AgeSelection'
 import StrategySelection from './components/StrategySelection'
-import LoadingPopup from './components/LoadingPopup'
 import PortfolioChart from './components/PortfolioChart'
 import TopBar from './components/TopBar'
-import { AnimatePresence } from 'framer-motion'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+    background: {
+      default: '#f5f5f5',
+    },
+  },
+});
 
 const portfolioData = {
   "경기침체 확률": 39.0,
@@ -68,42 +87,52 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
-      <TopBar onLogout={handleLogout} />
-      <div className="container mx-auto p-4">
-        <Card className="max-w-4xl mx-auto shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center text-blue-600">경기침체 대비 포트폴리오</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {!age && (
-              <div className="mb-8">
-                <h2 className="text-2xl mb-4 text-center font-semibold text-gray-700">나이대를 선택하세요</h2>
-                <AgeSelection onSelect={setAge} />
-              </div>
-            )}
-            {age && !strategy && (
-              <div className="mb-8">
-                <h2 className="text-2xl mb-4 text-center font-semibold text-gray-700">투자 전략을 선택하세요</h2>
-                <StrategySelection onSelect={setStrategy} />
-              </div>
-            )}
-            <AnimatePresence>
-              {loading && <LoadingPopup />}
-            </AnimatePresence>
-            {portfolio && (
-              <div className="mt-8 h-[500px]">
-                <h2 className="text-2xl mb-4 text-center font-semibold text-gray-700">조정된 포트폴리오</h2>
-                <PortfolioChart data={portfolio} />
-                <p className="mt-6 text-center text-lg font-medium text-blue-600">
-                  경기침체 확률: <span className="font-bold">{portfolioData["경기침체 확률"]}%</span>
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #bbdefb, #ffffff)' }}>
+        <TopBar onLogout={handleLogout} />
+        <Container maxWidth="md" sx={{ pt: 4 }}>
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h4" component="h1" align="center" color="primary" gutterBottom>
+                경기침체 대비 포트폴리오
+              </Typography>
+              {!age && (
+                <Box mb={4}>
+                  <Typography variant="h5" component="h2" align="center" gutterBottom>
+                    나이대를 선택하세요
+                  </Typography>
+                  <AgeSelection onSelect={setAge} />
+                </Box>
+              )}
+              {age && !strategy && (
+                <Box mb={4}>
+                  <Typography variant="h5" component="h2" align="center" gutterBottom>
+                    투자 전략을 선택하세요
+                  </Typography>
+                  <StrategySelection onSelect={setStrategy} />
+                </Box>
+              )}
+              {loading && (
+                <Box display="flex" justifyContent="center" alignItems="center" height={400}>
+                  <CircularProgress />
+                </Box>
+              )}
+              {portfolio && (
+                <Box mt={4} height={500}>
+                  <Typography variant="h5" component="h2" align="center" gutterBottom>
+                    조정된 포트폴리오
+                  </Typography>
+                  <PortfolioChart data={portfolio} />
+                  <Typography variant="h6" align="center" color="primary" sx={{ mt: 3 }}>
+                    경기침체 확률: <Box component="span" fontWeight="bold">{portfolioData["경기침체 확률"]}%</Box>
+                  </Typography>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
+    </ThemeProvider>
   )
 }
 

@@ -1,30 +1,34 @@
 import React from 'react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Baby, User, UserCog } from 'lucide-react'
+import { Button, Grid, Typography } from '@mui/material'
+import { Baby, Person, ElderlyWoman } from '@mui/icons-material'
 
 const AgeSelection = ({ onSelect }) => {
   return (
-    <div className="flex justify-center space-x-4">
-      <Card className="w-32 h-32 cursor-pointer" onClick={() => onSelect('청년층')}>
-        <CardContent className="flex flex-col items-center justify-center h-full">
-          <Baby size={32} />
-          <span className="mt-2">청년층</span>
-        </CardContent>
-      </Card>
-      <Card className="w-32 h-32 cursor-pointer" onClick={() => onSelect('중년층')}>
-        <CardContent className="flex flex-col items-center justify-center h-full">
-          <User size={32} />
-          <span className="mt-2">중년층</span>
-        </CardContent>
-      </Card>
-      <Card className="w-32 h-32 cursor-pointer" onClick={() => onSelect('장년층')}>
-        <CardContent className="flex flex-col items-center justify-center h-full">
-          <UserCog size={32} />
-          <span className="mt-2">장년층</span>
-        </CardContent>
-      </Card>
-    </div>
+    <Grid container spacing={2} justifyContent="center">
+      {[
+        { label: '청년층', icon: Baby },
+        { label: '중년층', icon: Person },
+        { label: '장년층', icon: ElderlyWoman }
+      ].map(({ label, icon: Icon }) => (
+        <Grid item key={label}>
+          <Button
+            variant="outlined"
+            onClick={() => onSelect(label)}
+            sx={{
+              width: 120,
+              height: 120,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Icon sx={{ fontSize: 40, mb: 1 }} />
+            <Typography variant="body2">{label}</Typography>
+          </Button>
+        </Grid>
+      ))}
+    </Grid>
   )
 }
 

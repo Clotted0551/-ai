@@ -2,8 +2,7 @@
 
 import React from 'react';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
-import { motion } from 'framer-motion';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Box } from '@mui/material';
 
 const COLORS = ['#FF6384', '#36A2EB'];
 
@@ -27,46 +26,26 @@ const PortfolioChart = ({ data }) => {
   };
 
   return (
-    <motion.div
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ duration: 0.5 }}
-      className="flex justify-center items-center w-full h-full max-w-md mx-auto"
-    >
-      <ChartContainer
-        config={{
-          위험자산: {
-            label: "위험자산",
-            color: COLORS[0],
-          },
-          안전자산: {
-            label: "안전자산",
-            color: COLORS[1],
-          },
-        }}
-        className="flex justify-center items-center w-full h-[400px]"
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={renderCustomizedLabel}
-              outerRadius={150}
-              dataKey="value"
-            >
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Legend verticalAlign="bottom" height={36} />
-            <ChartTooltip content={<ChartTooltipContent />} />
-          </PieChart>
-        </ResponsiveContainer>
-      </ChartContainer>
-    </motion.div>
+    <Box sx={{ width: '100%', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={renderCustomizedLabel}
+            outerRadius={150}
+            dataKey="value"
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Legend verticalAlign="bottom" height={36} />
+        </PieChart>
+      </ResponsiveContainer>
+    </Box>
   );
 };
 

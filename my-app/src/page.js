@@ -2,11 +2,11 @@
 
 import React from 'react'
 import { useState, useEffect } from 'react'
-import AgeSelection from '../components/AgeSelection'
-import StrategySelection from '../components/StrategySelection'
-import LoadingPopup from '../components/LoadingPopup'
-import PortfolioChart from '../components/PortfolioChart'
-import TopBar from '../components/TopBar'
+import AgeSelection from './components/AgeSelection'
+import StrategySelection from './components/StrategySelection'
+import LoadingPopup from './components/LoadingPopup'
+import PortfolioChart from './components/PortfolioChart'
+import TopBar from './components/TopBar'
 import { AnimatePresence } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 

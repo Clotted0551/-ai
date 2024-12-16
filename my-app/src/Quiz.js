@@ -47,6 +47,8 @@ const QuizApp = () => {
         setSelectedAnswer(null);
         setShowResult(false);
         setCurrentQuestionIndex(0);
+
+        
       } else {
         console.error('Failed to fetch quiz:', response.statusText);
       }
@@ -84,8 +86,20 @@ const QuizApp = () => {
     // 서버에 업데이트된 데이터 전송
     updateUserDataOnServer(newLevel, newExp);
 
+    
+    
     // 문제 히스토리 저장
     saveProblemHistory(currentQuestion.id, currentQuestion.quizQuestion, isCorrect ? 'correct' : 'incorrect');
+
+    const cachedQuizData = JSON.parse(localStorage.getItem('quizData')) || { quiz1: [], quiz2: [] };
+
+    const quizData = {
+      quiz1: cachedQuizData.quiz2[0] ? [cachedQuizData.quiz2[0]] : [], 
+      quiz2: [currentQuestion.quizQuestion, ...cachedQuizData.quiz2].slice(0, 1), 
+    };
+
+  // 로컬 스토리지에 저장
+    localStorage.setItem('quizData', JSON.stringify(quizData));
   };
 
   const updateUserDataOnServer = async (level, exp) => {
@@ -110,6 +124,7 @@ const QuizApp = () => {
     }
 
     const token = localStorage.getItem('token');
+    
     if (!token) {
       console.error('Authorization token is missing');
       return;
@@ -131,6 +146,7 @@ const QuizApp = () => {
         console.error('Failed to save problem history:', errorData.message || response.statusText);
       } else {
         console.log('Problem history saved successfully');
+        
       }
     } catch (error) {
       console.error('Error saving problem history:', error);

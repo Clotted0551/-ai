@@ -75,7 +75,7 @@ export default function Main({ setIsLoggedIn }) {
   return (
     <Box>
       <TopBar onLogout={handleLogout} /> {/* 상단바 컴포넌트 사용 */}
-      <Container component="main" maxWidth="lg" sx={{ mt: 10, mb: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+      <Container component="main" maxWidth="lg" sx={{ mt:10, mb: 5, px: { xs: 6, sm: 7, md: 8 } }}>
         <StyledPaper>
           <Typography variant="h2" component="h1" gutterBottom>
             환영합니다, {user.userName}!

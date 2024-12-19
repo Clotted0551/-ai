@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from 'react';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
@@ -29,8 +29,8 @@ const PortfolioChart = ({ data }) => {
     <Box sx={{ width: '100%', height: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
       <Grid container spacing={2}>
         {/* Left Section: 위험자산 설명 */}
-        <Grid item xs={12} md={4}>
-          <Paper elevation={3} sx={{ p: 2, backgroundColor: '#ffe8e8' }}>
+        <Grid item xs={12} md={3}>
+          <Paper elevation={3} sx={{ p: 2, backgroundColor: '#ffe8e8', maxHeight: 300, overflowY: 'auto' }}>
             <Typography variant="h6" gutterBottom>
               위험자산
             </Typography>
@@ -42,8 +42,8 @@ const PortfolioChart = ({ data }) => {
         </Grid>
 
         {/* Center Section: 차트 */}
-        <Grid item xs={12} md={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Box sx={{ width: '100%', height: 400 }}>
+        <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Box sx={{ width: '100%', height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -52,7 +52,7 @@ const PortfolioChart = ({ data }) => {
                   cy="50%"
                   labelLine={false}
                   label={renderCustomizedLabel}
-                  outerRadius={150}
+                  outerRadius={120}
                   dataKey="value"
                 >
                   {chartData.map((entry, index) => (
@@ -66,8 +66,8 @@ const PortfolioChart = ({ data }) => {
         </Grid>
 
         {/* Right Section: 안전자산 설명 */}
-        <Grid item xs={12} md={4}>
-          <Paper elevation={3} sx={{ p: 2, backgroundColor: '#e8f4ff' }}>
+        <Grid item xs={12} md={3}>
+          <Paper elevation={3} sx={{ p: 2, backgroundColor: '#e8f4ff', maxHeight: 300, overflowY: 'auto' }}>
             <Typography variant="h6" gutterBottom>
               안전자산
             </Typography>

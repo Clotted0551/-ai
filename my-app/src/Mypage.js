@@ -63,6 +63,14 @@ export default function MyProfile() {
     fetchUserData();
   }, []);
 
+  const formatBirthday = (birthday) => {
+    if (!birthday || birthday.length !== 8) return "Invalid Date";
+    const year = birthday.substring(0, 4);
+    const month = birthday.substring(4, 6);
+    const day = birthday.substring(6, 8);
+    return `${year}/${month}/${day}`; // 또는 다른 형식으로 표시: `${day}/${month}/${year}`
+  };
+
   const renderLevelInfo = useMemo(() => {
     if (!userData || userData.userLevel === null) {
       return (
@@ -148,7 +156,8 @@ export default function MyProfile() {
               </Box>
               <Typography><strong>ID:</strong> {userData.userId}</Typography>
               <Typography><strong>Email:</strong> {userData.userEmail}</Typography>
-              <Typography><strong>생일:</strong> {new Date(userData.userBirthday).toLocaleDateString()}</Typography>
+              {/* <Typography><strong>생일:</strong> {new Date(userData.userBirthday).toLocaleDateString()}</Typography> */}
+              <Typography><strong>생일:</strong> {formatBirthday(userData.userBirthday)}</Typography>
             </StyledCardContent>
           </StyledCard>
         </Grid>

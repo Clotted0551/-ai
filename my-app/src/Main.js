@@ -1,47 +1,44 @@
-// src/Main.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Box, Typography, Paper, Button } from '@mui/material';
-import TopBar from './components/TopBar';  // TopBar 컴포넌트 import
 import { styled } from '@mui/material/styles';
-
+import TopBar from './components/TopBar'; // TopBar 컴포넌트 import
+import AssessmentIcon from '@mui/icons-material/Assessment'; // 아이콘 예시
+import SchoolIcon from '@mui/icons-material/School';
+// 스타일링: 큰 박스
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(6),
   display: 'flex',
   flexDirection: 'column',
+  justifyContent: 'center',
   alignItems: 'center',
+  padding: theme.spacing(5),
+  borderRadius: '16px',
+  boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+  backgroundColor: '#F9F9F9',
+  minHeight: '220px',
   width: '100%',
-  maxWidth: '100%',
-  margin: '0 auto',
-  backgroundColor: '#fff',
-  color: '#000',
-  boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+  textAlign: 'center',
 }));
-
-const MainButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(2),
-  padding: `${theme.spacing(2)} ${theme.spacing(6)}`,
-  fontSize: '1.2rem',
-  border: '2px solid #000',
-  backgroundColor: '#fff',
-  color: '#000',
+// 버튼 스타일
+const ActionButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  padding: theme.spacing(1.5, 4),
+  fontSize: '1.1rem',
+  fontWeight: 'bold',
+  backgroundColor: '#4CAF50',
+  color: '#fff',
   '&:hover': {
-    backgroundColor: '#000',
-    color: '#fff',
+    backgroundColor: '#388E3C',
   },
 }));
-
 export default function Main({ setIsLoggedIn }) {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await fetch('/api/user/profile', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         if (response.ok) {
           const userData = await response.json();
@@ -54,16 +51,13 @@ export default function Main({ setIsLoggedIn }) {
         navigate('/');
       }
     };
-
     fetchUserData();
   }, [navigate]);
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
     navigate('/');
   };
-
   if (!user) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -71,40 +65,37 @@ export default function Main({ setIsLoggedIn }) {
       </Box>
     );
   }
-
   return (
     <Box>
-      <TopBar onLogout={handleLogout} /> {/* 상단바 컴포넌트 사용 */}
-      <Container component="main" maxWidth="lg" sx={{ mt:10, mb: 5, px: { xs: 6, sm: 7, md: 8 } }}>
-        <StyledPaper>
-          <Typography variant="h2" component="h1" gutterBottom>
-            환영합니다, {user.userName}!
-          </Typography>
-          <Typography variant="h4" gutterBottom>
-            {user.userLevel === 0
-              ? '배치고사를 진행해주세요!'
-              : `현재 레벨: ${user.userLevel}`}
-          </Typography>
-          <Typography variant="h4" gutterBottom sx={{ mb: 6 }}>
-            학습할 준비가 되셨나요?
-          </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
-            <MainButton
-              variant="outlined"
-              onClick={() => navigate('/placement-test')}
-              size="large"
-            >
+      <TopBar onLogout={handleLogout} />
+      <Container component="main" maxWidth="lg" sx={{ mt: 10, mb: 5 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          경제 교육 학습 플랫폼
+        </Typography>
+        <Box display="flex" gap={4} flexWrap="wrap" justifyContent="center">
+          {/* 배치고사 박스 */}
+          <StyledPaper>
+            <AssessmentIcon sx={{ fontSize: 60, color: '#4CAF50' }} />
+            <Typography variant="h5" sx={{ mt: 2 }}>
               배치고사
-            </MainButton>
-            <MainButton
-              variant="outlined"
-              onClick={() => navigate('/quiz')}
-              size="large"
-            >
-              학습시작!
-            </MainButton>
-          </Box>
-        </StyledPaper>
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 1, color: '#555' }}>
+              나의 경제지식을 측정하고 맞춤 학습을 시작하세요.
+            </Typography>
+            <ActionButton onClick={() => navigate('/placement-test')}>시작하기</ActionButton>
+          </StyledPaper>
+          {/* 문제풀기 박스 */}
+          <StyledPaper>
+            <SchoolIcon sx={{ fontSize: 60, color: '#FF9800' }} />
+            <Typography variant="h5" sx={{ mt: 2 }}>
+              문제풀기
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 1, color: '#555' }}>
+              다양한 경제 문제를 해결하며 실력을 키우세요.
+            </Typography>
+            <ActionButton onClick={() => navigate('/quiz')}>학습 시작</ActionButton>
+          </StyledPaper>
+        </Box>
       </Container>
     </Box>
   );
